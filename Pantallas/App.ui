@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Main</class>
+ <widget class="QWidget" name="Main">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1110</width>
+    <height>667</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MiniTrello - Principal</string>
+  </property>
+  <layout class="QVBoxLayout" name="layoutPrincipal">
+   <property name="leftMargin">
+    <number>18</number>
+   </property>
+   <property name="topMargin">
+    <number>18</number>
+   </property>
+   <property name="rightMargin">
+    <number>18</number>
+   </property>
+   <property name="bottomMargin">
+    <number>18</number>
+   </property>
+   <item>
+    <widget class="QTabWidget" name="pestanasPrincipal">
+     <property name="currentIndex">
+      <number>2</number>
+     </property>
+     <widget class="QWidget" name="tabTableros">
+      <attribute name="title">
+       <string>Tableros</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="layoutTableros">
+       <property name="spacing">
+        <number>14</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="barraSuperiorTableros">
+         <item>
+          <widget class="QLabel" name="lblMisTableros">
+           <property name="text">
+            <string>Mis tableros</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="espacioTableros1">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>80</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="lblUsuarioActual">
+           <property name="text">
+            <string>Usuario: (pendiente)</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="contenidoTableros">
+         <item>
+          <widget class="QListWidget" name="listaTableros">
+           <property name="minimumSize">
+            <size>
+             <width>520</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="botoneraTableros">
+           <property name="spacing">
+            <number>10</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="btnNuevoTablero">
+             <property name="text">
+              <string>Nuevo tablero</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnAbrirTablero">
+             <property name="text">
+              <string>Abrir tablero</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnBorrarTablero">
+             <property name="text">
+              <string>Borrar tablero</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="espacioTableros2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnCerrarSesion">
+             <property name="text">
+              <string>Cerrar sesión</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="espacioTableros3">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabTablero">
+      <attribute name="title">
+       <string>Tablero</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="layoutTablero">
+       <property name="spacing">
+        <number>12</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="barraSuperiorTablero">
+         <item>
+          <widget class="QLabel" name="lblNombreTablero">
+           <property name="text">
+            <string>Tablero: (sin seleccionar)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="espacioTablero1">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txtBuscarTarjetas">
+           <property name="minimumSize">
+            <size>
+             <width>260</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="placeholderText">
+            <string>Buscar tarjetas...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnNuevaColumna">
+           <property name="text">
+            <string>Nueva columna</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnNuevaTarjeta">
+           <property name="text">
+            <string>Nueva tarjeta</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnGuardarTablero">
+           <property name="text">
+            <string>Guardar</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnVolverATableros">
+           <property name="text">
+            <string>Volver</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QScrollArea" name="scrollColumnas">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="contenedorColumnas">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1044</width>
+            <height>536</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="layoutColumnas">
+           <property name="spacing">
+            <number>14</number>
+           </property>
+           <property name="leftMargin">
+            <number>6</number>
+           </property>
+           <property name="topMargin">
+            <number>6</number>
+           </property>
+           <property name="rightMargin">
+            <number>6</number>
+           </property>
+           <property name="bottomMargin">
+            <number>6</number>
+           </property>
+           <item>
+            <widget class="QFrame" name="columnaPorHacer">
+             <property name="minimumSize">
+              <size>
+               <width>300</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <layout class="QVBoxLayout" name="layoutColumnaPorHacer">
+              <property name="spacing">
+               <number>10</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="lblPorHacer">
+                <property name="text">
+                 <string>Por hacer</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QListWidget" name="listaPorHacer"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="columnaEnProgreso">
+             <property name="minimumSize">
+              <size>
+               <width>300</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <layout class="QVBoxLayout" name="layoutColumnaEnProgreso">
+              <property name="spacing">
+               <number>10</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="lblEnProgreso">
+                <property name="text">
+                 <string>En progreso</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QListWidget" name="listaEnProgreso"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="columnaHecho">
+             <property name="minimumSize">
+              <size>
+               <width>300</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <layout class="QVBoxLayout" name="layoutColumnaHecho">
+              <property name="spacing">
+               <number>10</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="lblHecho">
+                <property name="text">
+                 <string>Hecho</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QListWidget" name="listaHecho"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <spacer name="espacioFinalColumnas">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabAjustes">
+      <attribute name="title">
+       <string>Ajustes</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="layoutAjustes">
+       <property name="spacing">
+        <number>12</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="lblAjustesTitulo">
+         <property name="text">
+          <string>Ajustes</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chkAutoGuardado">
+         <property name="text">
+          <string>Activar autoguardado</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboTema">
+         <property name="editable">
+          <bool>false</bool>
+         </property>
+         <item>
+          <property name="text">
+           <string>Brutalista claro</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Brutalista oscuro (opcional)</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblInfoApp">
+         <property name="text">
+          <string>App Tablas</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="espacioAjustesFinal">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>200</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
