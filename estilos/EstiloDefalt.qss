@@ -1,0 +1,78 @@
+
+
+* {
+    font-family: "Segoe UI";
+    font-size: 14px;
+}
+
+QWidget {
+    background: #FFF6F3;        /* blanco cálido */
+    color: #1A1A1A;             /* negro fuerte */
+}
+
+QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QComboBox {
+    background: #FFFFFF;
+    border: 2px solid #1A1A1A;
+    padding: 8px;
+}
+
+
+QPushButton {
+    background: #FA8072;        
+    color: #1A1A1A;
+    border: 3px solid #1A1A1A;
+    padding: 10px 14px;
+    font-weight: 700;
+}
+
+QPushButton:hover {
+    background: #FF9B90;
+}
+
+QPushButton:pressed {
+    background: #F36F62;
+}
+
+/* Botón cancelar 
+QPushButton#btnCancelar {
+    background: #FFFFFF;
+    border: 3px solid #1A1A1A;
+}
+
+QPushButton#btnCancelar:hover {
+    background: #FFE1DC;
+}
+
+
+QTabWidget::pane {
+    border: 3px solid #1A1A1A;
+}
+
+QTabBar::tab {
+    background: #FFFFFF;
+    border: 3px solid #1A1A1A;
+    padding: 10px 14px;
+    margin-right: 6px;
+    font-weight: 700;
+}
+
+QTabBar::tab:selected {
+    background: #FA8072;
+}
+
+
+QScrollBar:vertical {
+    border: 2px solid #1A1A1A;
+    background: #FFFFFF;
+    width: 14px;
+}
+
+QScrollBar::handle:vertical {
+    background: #FA8072;
+    min-height: 30px;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    background: none;
+}
