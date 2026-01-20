@@ -56,7 +56,7 @@ class TrelloLista:
         self.cards.append(tarjeta)
         
     def remove_card(self, Tarjeta_id: str):
-        self.cards = [c for c in self.cards if c.id != card_id]
+        self.cards = [c for c in self.cards if c.id != Tarjeta_id]
 
 @dataclass
 class Tablero:
@@ -66,7 +66,7 @@ class Tablero:
     members: List[User] = field(default_factory=list)
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
 
-    def add_list(self, trello_list: TrelloList):
+    def add_list(self, trello_list: TrelloLista):
         self.lists.append(trello_list)
         
     def get_card_count(self):
