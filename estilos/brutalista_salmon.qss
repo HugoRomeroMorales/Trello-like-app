@@ -1,0 +1,136 @@
+/* Salmon Theme (Standard Design) */
+
+/* Global Settings */
+* {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    color: #172b4d; /* Text Color */
+}
+
+QWidget {
+    background-color: #FFF6F3; /* Very light salmon background */
+}
+
+/* Scrollbars */
+QScrollBar:vertical {
+    border: none;
+    background: #FFE4E1; /* Misty Rose */
+    width: 12px;
+}
+QScrollBar::handle:vertical {
+    background: #FA8072; /* Salmon */
+    min-height: 20px;
+    border-radius: 6px;
+    margin: 2px;
+}
+QScrollBar::handle:vertical:hover {
+    background: #E9967A; /* Dark Salmon */
+}
+
+/* Inputs */
+QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QComboBox {
+    background-color: #ffffff;
+    border: 2px solid #FFC0CB; /* Pinkish border */
+    border-radius: 3px;
+    padding: 6px;
+    color: #172b4d;
+}
+QLineEdit:focus, QTextEdit:focus {
+    border: 2px solid #FA8072; /* Focus Salmon */
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #FA8072; /* Salmon */
+    color: #ffffff; /* White text for contrast on Salmon */
+    border: none;
+    border-radius: 3px;
+    padding: 8px 12px;
+    font-weight: 600;
+}
+QPushButton:hover {
+    background-color: #FF6347; /* Tomato (brighter red/orange) */
+}
+QPushButton:pressed {
+    background-color: #E9967A;
+}
+
+/* Lists / Columns */
+QFrame {
+    background-color: #FFE4E1; /* List Background - Misty Rose */
+    border-radius: 12px;
+}
+
+/* Labels */
+QLabel {
+    color: #172b4d;
+    background-color: transparent;
+}
+
+/* List Widgets (The Cards Container) */
+QListWidget {
+    background-color: #FFE4E1;
+    border: none;
+    outline: none;
+}
+QListWidget::item {
+    background-color: #ffffff; /* Card Background */
+    color: #172b4d;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    padding: 10px;
+    border: 1px solid #FFC0CB; 
+}
+QListWidget::item:hover {
+    background-color: #fff0f5; /* Lavender Blush */
+    border: 1px solid #FA8072;
+}
+QListWidget::item:selected {
+    background-color: #ffe4e1;
+    border: 1px solid #FA8072;
+}
+
+/* Tabs */
+QTabWidget::pane {
+    border: 1px solid #FFC0CB;
+    background-color: #FFF6F3;
+}
+QTabBar::tab {
+    background: #FFE4E1;
+    color: #172b4d;
+    padding: 10px 15px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    margin-right: 2px;
+}
+QTabBar::tab:selected {
+    background: #FA8072;
+    color: #ffffff;
+    font-weight: bold;
+}
+QTabBar::tab:hover:!selected {
+    background: #FFB6C1;
+}
+
+/* Menu */
+QMenu {
+    background-color: #ffffff;
+    border: 1px solid #FFC0CB;
+    padding: 5px;
+}
+QMenu::item {
+    padding: 5px 20px;
+    border-radius: 4px;
+}
+QMenu::item:selected {
+    background-color: #FFF6F3;
+    color: #172b4d;
+}
+
+/* Dialogs */
+QMessageBox {
+    background-color: #ffffff;
+}
+QInputDialog {
+    background-color: #ffffff;
+}

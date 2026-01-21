@@ -1,0 +1,162 @@
+/* Trello Dark Theme */
+
+/* Global Settings */
+* {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    color: #B6C2CF; /* Text Color */
+}
+
+QWidget {
+    background-color: #1d2125; /* Main Background */
+}
+
+/* Scrollbars */
+QScrollBar:vertical {
+    border: none;
+    background: #161a1d;
+    width: 12px;
+    margin: 0px 0px 0px 0px;
+}
+QScrollBar::handle:vertical {
+    background: #454F59;
+    min-height: 20px;
+    border-radius: 6px;
+    margin: 2px;
+}
+QScrollBar::handle:vertical:hover {
+    background: #596773;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar:horizontal {
+    border: none;
+    background: #161a1d;
+    height: 12px;
+    margin: 0px 0px 0px 0px;
+}
+QScrollBar::handle:horizontal {
+    background: #454F59;
+    min-width: 20px;
+    border-radius: 6px;
+    margin: 2px;
+}
+
+
+/* Inputs */
+QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QComboBox {
+    background-color: #22272b;
+    border: 2px solid #596773; /* Border Color */
+    border-radius: 3px;
+    padding: 6px;
+    color: #B6C2CF;
+    selection-background-color: #579dff;
+    selection-color: #1d2125;
+}
+QLineEdit:focus, QTextEdit:focus {
+    border: 2px solid #85B8FF; /* Focus Blue */
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #a6c5e229; /* Button Default (Transparent-ish) */
+    color: #B6C2CF;
+    border: none;
+    border-radius: 3px;
+    padding: 8px 12px;
+    font-weight: 600;
+}
+QPushButton:hover {
+    background-color: #a6c5e252; /* Lighter on hover */
+}
+QPushButton:pressed {
+    background-color: #a6c5e214;
+}
+
+/* Primary/Action Buttons (You might need to assign objectNames or classes to distinguish) */
+/* For now, let's style specific known buttons if possible, or generic ones */
+
+/* Lists / Columns */
+QFrame {
+    background-color: #101204; /* List Background */
+    border-radius: 12px;
+}
+
+/* Specific Frame for Columns if identified, checking App.ui would be good, 
+   but for now assuming QWidget inside ScrollArea or similar */
+
+/* Labels */
+QLabel {
+    color: #B6C2CF;
+    background-color: transparent;
+}
+
+/* List Widgets (The Cards Container) */
+QListWidget {
+    background-color: #101204;
+    border: none;
+    outline: none;
+}
+QListWidget::item {
+    background-color: #22272b; /* Card Background */
+    color: #B6C2CF;
+    border-radius: 8px;
+    margin-bottom: 8px; /* Spacing between cards */
+    padding: 10px;
+    border: 1px solid transparent; 
+}
+QListWidget::item:hover {
+    background-color: #2c333a; /* Card Hover */
+    border: 1px solid #85B8FF;
+}
+QListWidget::item:selected {
+    background-color: #2c333a;
+    border: 1px solid #579dff;
+}
+
+/* Tabs */
+QTabWidget::pane {
+    border: 1px solid #161a1d;
+    background-color: #1d2125;
+}
+QTabBar::tab {
+    background: #161a1d;
+    color: #9fadbc;
+    padding: 10px 15px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    margin-right: 2px;
+}
+QTabBar::tab:selected {
+    background: #579dff; /* Active Tab Blue */
+    color: #1d2125;
+    font-weight: bold;
+}
+QTabBar::tab:hover:!selected {
+    background: #2c333a;
+}
+
+/* Menu */
+QMenu {
+    background-color: #282e33;
+    border: 1px solid #454F59;
+    padding: 5px;
+}
+QMenu::item {
+    padding: 5px 20px;
+    border-radius: 4px;
+}
+QMenu::item:selected {
+    background-color: #3c464f;
+    color: #B6C2CF;
+}
+
+/* Dialogs / Message Boxes */
+QMessageBox {
+    background-color: #282e33;
+}
+QInputDialog {
+    background-color: #282e33;
+}

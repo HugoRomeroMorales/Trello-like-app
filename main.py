@@ -1,6 +1,6 @@
 import sys
 import os
-from PyQt5 import QtWidgets, uic, QtCore
+from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from Controladores.Modelos import Tablero, User
 from Controladores.Listas import ListasController
 from Controladores.Controller_BD import SupabaseController
@@ -18,6 +18,10 @@ class MainWindow(QtWidgets.QWidget):
             print(f"Error: Could not find UI file at {ui_path}")
             sys.exit(1)
 
+        # Default Theme
+        self.tema_actual = "brutalista" 
+        self.cargar_tema(self.tema_actual)
+
         # Initialize DB Controller
         # NOTE: User should set SUPABASE_URL and SUPABASE_KEY env vars or we can prompt/hardcode for testing
         self.db_controller = SupabaseController()
@@ -26,22 +30,69 @@ class MainWindow(QtWidgets.QWidget):
         self.current_user = User(username="UsuarioDemo")
         
         # Setup UI connections
-        self.setup_connections()
+        self.configurar_conexiones()
+        
+        # Setup Header for Theme Toggle (if possible, or just a button somewhere accessible)
+        # We can add a toggle button programmatically to the layout if needed.
+        # Let's add a button to the list of boards for now or top right corner if layout permits.
         
         # Initial state
         self.pestanasPrincipal.setCurrentIndex(0) # Tableros tab
         self.cargar_tableros()
 
-    def setup_connections(self):
+    def cargar_tema(self, nombre_tema):
+        if nombre_tema == "oscuro":
+            filename = "trello_oscuro.qss"
+        elif nombre_tema == "claro":
+             filename = "trello_claro.qss"
+        else:
+             filename = "brutalista_salmon.qss"
+
+        path = os.path.join(current_dir, "estilos", filename)
+        
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                style = f.read()
+                self.setStyleSheet(style)
+        except Exception as e:
+            print(f"Error cargando tema {nombre_tema}: {e}")
+
+    def configurar_conexiones(self):
         # Tableros Tab
         self.btnNuevoTablero.clicked.connect(self.crear_tablero)
         self.btnAbrirTablero.clicked.connect(self.abrir_tablero_seleccionado)
         self.listaTableros.itemDoubleClicked.connect(self.abrir_tablero_seleccionado)
         
+        # Settings Tab - Theme Combo
+        # Check if comboTema exists (it should from UI file)
+        if hasattr(self, 'comboTema'):
+            self.comboTema.clear()
+            self.comboTema.addItems(["Modo Oscuro", "Modo Claro", "Brutalista Salmón"])
+            self.comboTema.currentIndexChanged.connect(self.al_cambiar_tema)
+            
+            # Set initial state
+            if self.tema_actual == "oscuro":
+                self.comboTema.setCurrentIndex(0)
+            elif self.tema_actual == "claro":
+                self.comboTema.setCurrentIndex(1)
+            else:
+                 self.comboTema.setCurrentIndex(2)
+
         # Tablero Tab
         self.btnVolverATableros.clicked.connect(self.volver_a_tableros)
         self.btnNuevaColumna.clicked.connect(self.crear_nueva_lista)
         self.btnNuevaTarjeta.clicked.connect(self.crear_nueva_tarjeta)
+
+    def al_cambiar_tema(self, index):
+        if index == 0:
+            self.cargar_tema("oscuro")
+            self.tema_actual = "oscuro"
+        elif index == 1:
+            self.cargar_tema("claro")
+            self.tema_actual = "claro"
+        elif index == 2:
+            self.cargar_tema("brutalista")
+            self.tema_actual = "brutalista"
 
     def cargar_tableros(self):
         self.listaTableros.clear()
@@ -170,6 +221,9 @@ class MainWindow(QtWidgets.QWidget):
             self.renderizar_columnas()
 
     def crear_nueva_tarjeta(self):
+        if not hasattr(self, 'listas_controller'):
+             return
+
         # For simplicity, add to the first list or ask user which list
         listas = self.listas_controller.obtener_listas()
         if not listas:
