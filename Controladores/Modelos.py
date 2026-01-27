@@ -49,6 +49,9 @@ class Tablero:
 
     def add_list(self, trello_list: TrelloLista):
         self.lists.append(trello_list)
+    
+    def remove_list(self, list_id: str):
+        self.lists = [l for l in self.lists if l.id != list_id]
         
     def get_card_count(self):
         return sum(len(l.cards) for l in self.lists)

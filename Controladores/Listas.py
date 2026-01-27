@@ -34,6 +34,17 @@ class ListasController:
                 trello_list.titulo = new_name
                 return True
         return False
+    
+    def actualizar_contenido_tarjeta(self, list_id: str, card_id: str, new_title: str, new_description: str) -> bool:
+        if self.db.actualizar_tarjeta(card_id, titulo=new_title, descripcion=new_description):
+            trello_list = self._obtener_lista_por_id(list_id)
+            if trello_list:
+                card = next((c for c in trello_list.cards if c.id == card_id), None)
+                if card:
+                    card.titulo = new_title
+                    card.descripcion = new_description
+                    return True
+        return False
 
     def agregar_tarjeta(self, list_id: str, title: str, description: str = "", user: Optional[User] = None) -> Optional[Tarjeta]:
         """Añade tarjeta a una lista."""

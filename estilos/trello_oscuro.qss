@@ -1,14 +1,18 @@
+/* =========================
+   trello_oscuro.qss
+   ========================= */
+
 /* Trello Dark Theme */
 
 /* Global Settings */
 * {
     font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     font-size: 14px;
-    color: #B6C2CF; /* Text Color */
+    color: #B6C2CF;
 }
 
 QWidget {
-    background-color: #1d2125; /* Main Background */
+    background-color: #1d2125;
 }
 
 /* Scrollbars */
@@ -44,11 +48,10 @@ QScrollBar::handle:horizontal {
     margin: 2px;
 }
 
-
 /* Inputs */
 QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QComboBox {
     background-color: #22272b;
-    border: 2px solid #596773; /* Border Color */
+    border: 2px solid #596773;
     border-radius: 3px;
     padding: 6px;
     color: #B6C2CF;
@@ -56,13 +59,12 @@ QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QComboBox {
     selection-color: #1d2125;
 }
 QLineEdit:focus, QTextEdit:focus {
-    border: 2px solid #85B8FF; /* Focus Blue */
+    border: 2px solid #85B8FF;
 }
 
 /* Buttons */
-/* Buttons */
 QPushButton {
-    background-color: #0079bf; /* Trello Blue */
+    background-color: #0079bf;
     color: #ffffff;
     border: none;
     border-radius: 3px;
@@ -70,23 +72,17 @@ QPushButton {
     font-weight: 600;
 }
 QPushButton:hover {
-    background-color: #026aa7; /* Slightly darker blue */
+    background-color: #026aa7;
 }
 QPushButton:pressed {
     background-color: #055a8c;
 }
 
-/* Primary/Action Buttons (You might need to assign objectNames or classes to distinguish) */
-/* For now, let's style specific known buttons if possible, or generic ones */
-
-/* Lists / Columns */
+/* Lists / Columns (Generic) */
 QFrame {
-    background-color: #101204; /* List Background */
+    background-color: #101204;
     border-radius: 12px;
 }
-
-/* Specific Frame for Columns if identified, checking App.ui would be good, 
-   but for now assuming QWidget inside ScrollArea or similar */
 
 /* Labels */
 QLabel {
@@ -94,22 +90,22 @@ QLabel {
     background-color: transparent;
 }
 
-/* List Widgets (The Cards Container) */
+/* List Widgets (genérico) */
 QListWidget {
     background-color: #101204;
     border: none;
     outline: none;
 }
 QListWidget::item {
-    background-color: #22272b; /* Card Background */
+    background-color: #22272b;
     color: #B6C2CF;
     border-radius: 8px;
-    margin-bottom: 8px; /* Spacing between cards */
+    margin-bottom: 8px;
     padding: 10px;
-    border: 1px solid transparent; 
+    border: 1px solid transparent;
 }
 QListWidget::item:hover {
-    background-color: #2c333a; /* Card Hover */
+    background-color: #2c333a;
     border: 1px solid #85B8FF;
 }
 QListWidget::item:selected {
@@ -131,7 +127,7 @@ QTabBar::tab {
     margin-right: 2px;
 }
 QTabBar::tab:selected {
-    background: #579dff; /* Active Tab Blue */
+    background: #579dff;
     color: #1d2125;
     font-weight: bold;
 }
@@ -160,4 +156,81 @@ QMessageBox {
 }
 QInputDialog {
     background-color: #282e33;
+}
+
+/* -----------------------------------------------------------------
+   COLUMNAS DINÁMICAS (DRAG & DROP)
+   ----------------------------------------------------------------- */
+
+#columnaFrame {
+    background-color: #101204;
+    border: 1px solid #384148;
+    border-radius: 12px;
+}
+
+#lblColumnaHeader {
+    font-weight: bold;
+    font-size: 16px;
+    color: #B6C2CF;
+    border: none;
+    background: transparent;
+}
+
+#btnColumnaHeader {
+    border: none;
+    background: transparent;
+    color: #9fadbc;
+    font-size: 20px;
+    font-weight: bold;
+}
+#btnColumnaHeader:hover {
+    background-color: #A6C5E229;
+    color: #B6C2CF;
+    border-radius: 4px;
+}
+
+#listaTarjetas {
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0px;
+}
+
+/* CLAVE: item invisible para evitar doble tarjeta */
+#listaTarjetas::item {
+    background: transparent;
+    border: none;
+    padding: 0px;
+    margin: 0px;
+}
+#listaTarjetas::item:selected {
+    background: transparent;
+    border: none;
+}
+
+#cardBody {
+    background-color: #22272b;
+    border-radius: 8px;
+    border: 1px solid #384148;
+}
+
+#lblCardTitle {
+    border: none;
+    background: transparent;
+    color: #B6C2CF;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+#btnCardAction {
+    border: none;
+    background: #282e33;
+    color: #9fadbc;
+    border-radius: 4px;
+    font-size: 18px;
+    font-weight: bold;
+}
+#btnCardAction:hover {
+    background: #A6C5E229;
+    color: #B6C2CF;
 }

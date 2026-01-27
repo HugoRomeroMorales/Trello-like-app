@@ -1,15 +1,18 @@
-/* Trello Light Theme */
+/* =========================
+   trello_claro.qss
+   ========================= */
+
+/* Trello Light Theme (Classic Blue) */
 
 /* Global Settings */
 * {
     font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     font-size: 14px;
-    color: #172b4d; /* Text Color */
+    color: #172b4d;
 }
 
 QWidget {
-    background-color: #0079bf; /* Main Background - Trello Blue */
-    /* Less monotonous, classic Trello Board look */
+    background-color: #bbfafc;
 }
 
 /* Scrollbars */
@@ -37,13 +40,13 @@ QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QComboBox {
     color: #172b4d;
 }
 QLineEdit:focus, QTextEdit:focus {
-    border: 2px solid #0079bf; /* Focus Blue */
+    border: 2px solid #0079bf;
 }
 
 /* Buttons */
 QPushButton {
-    background-color: #091e420f; /* Button Default (Transparent-ish grey) */
-    color: #172b4d;
+    background-color: #002a720f;
+    color: #021941;
     border: none;
     border-radius: 3px;
     padding: 8px 12px;
@@ -56,9 +59,9 @@ QPushButton:pressed {
     background-color: #091e4229;
 }
 
-/* Lists / Columns */
+/* Lists / Columns (Generic) */
 QFrame {
-    background-color: #ebecf0; /* List Background */
+    background-color: #ebecf0;
     border-radius: 12px;
 }
 
@@ -68,20 +71,19 @@ QLabel {
     background-color: transparent;
 }
 
-/* List Widgets (The Cards Container) */
+/* List Widgets (genérico) */
 QListWidget {
     background-color: #ebecf0;
     border: none;
     outline: none;
 }
 QListWidget::item {
-    background-color: #ffffff; /* Card Background */
+    background-color: #ffffff;
     color: #172b4d;
     border-radius: 8px;
     margin-bottom: 8px;
     padding: 10px;
-    border: 1px solid #dfe1e6; /* Subtle border/shadow replacement */
-    /* box-shadow doesn't work well in QSS, rely on border/color */
+    border: 1px solid #dfe1e6;
 }
 QListWidget::item:hover {
     background-color: #f4f5f7;
@@ -135,4 +137,82 @@ QMessageBox {
 }
 QInputDialog {
     background-color: #ffffff;
+}
+
+/* -----------------------------------------------------------------
+   COLUMNAS DINÁMICAS (DRAG & DROP)
+   ----------------------------------------------------------------- */
+
+#columnaFrame {
+    background-color: #ebecf0;
+    border: 1px solid #dfe1e6;
+    border-radius: 12px;
+}
+
+#lblColumnaHeader {
+    font-weight: bold;
+    font-size: 16px;
+    color: #172b4d;
+    border: none;
+    background: transparent;
+}
+
+#btnColumnaHeader {
+    border: none;
+    background: transparent;
+    color: #6b778c;
+    font-size: 20px;
+    font-weight: bold;
+}
+#btnColumnaHeader:hover {
+    background-color: #091e4214;
+    color: #172b4d;
+    border-radius: 4px;
+}
+
+#listaTarjetas {
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0px;
+}
+
+/* CLAVE: item invisible para evitar doble tarjeta */
+#listaTarjetas::item {
+    background: transparent;
+    border: none;
+    padding: 0px;
+    margin: 0px;
+}
+#listaTarjetas::item:selected {
+    background: transparent;
+    border: none;
+}
+
+#cardBody {
+    background-color: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #dfe1e6;
+    border-bottom: 2px solid #dfe1e6;
+}
+
+#lblCardTitle {
+    border: none;
+    background: transparent;
+    color: #172b4d;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+#btnCardAction {
+    border: none;
+    background: #f4f5f7;
+    color: #42526e;
+    border-radius: 4px;
+    font-size: 18px;
+    font-weight: bold;
+}
+#btnCardAction:hover {
+    background: #ebecf0;
+    color: #172b4d;
 }
