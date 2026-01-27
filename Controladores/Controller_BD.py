@@ -199,3 +199,18 @@ class SupabaseController:
             print(f"Error eliminando tarjeta: {e}")
             return False
 
+    def actualizar_tarjeta(self, card_id: str, titulo: str = None, descripcion: str = None) -> bool:
+        if not self.client: return False
+        try:
+            data = {}
+            if titulo: data['titulo'] = titulo
+            if descripcion is not None: data['descripcion'] = descripcion
+            
+            if not data: return False
+            
+            self.client.table('tarjetas').update(data).eq('id', card_id).execute()
+            return True
+        except Exception as e:
+            print(f"Error actualizando tarjeta: {e}")
+            return False
+

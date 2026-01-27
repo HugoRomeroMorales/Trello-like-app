@@ -59,6 +59,8 @@ QPushButton:pressed {
 QFrame {
     background-color: #FFE4E1; /* List Background - Misty Rose */
     border-radius: 12px;
+    border: 2px solid #FA8072; /* Strong Salmon Border for Brutalism */
+    margin: 4px; /* Separation from other lists/background */
 }
 
 /* Labels */
@@ -79,7 +81,7 @@ QListWidget::item {
     border-radius: 8px;
     margin-bottom: 8px;
     padding: 10px;
-    border: 1px solid #FFC0CB; 
+    border: 2px solid #FA8072; /* Thicker border for cards */
 }
 QListWidget::item:hover {
     background-color: #fff0f5; /* Lavender Blush */

@@ -8,9 +8,8 @@
 }
 
 QWidget {
-    background-color: #F4F5F7; /* Main Background - Neutral Greyish */
-    /* Alternatively #0079bf for Blue board background style, but applying to all widgets might be too much. 
-       Let's stick to neutral layout background */
+    background-color: #0079bf; /* Main Background - Trello Blue */
+    /* Less monotonous, classic Trello Board look */
 }
 
 /* Scrollbars */

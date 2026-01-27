@@ -57,6 +57,17 @@ class ListasController:
                 return True
         return False
 
+    def renombrar_tarjeta(self, list_id: str, card_id: str, new_title: str) -> bool:
+        """Renombra una tarjeta."""
+        if self.db.actualizar_tarjeta(card_id, titulo=new_title):
+            trello_list = self._obtener_lista_por_id(list_id)
+            if trello_list:
+                card = next((c for c in trello_list.cards if c.id == card_id), None)
+                if card:
+                    card.titulo = new_title
+                    return True
+        return False
+
     def mover_tarjeta(self, source_list_id: str, dest_list_id: str, card_id: str) -> bool:
         """Mueve tarjeta entre listas."""
         source_list = self._obtener_lista_por_id(source_list_id)

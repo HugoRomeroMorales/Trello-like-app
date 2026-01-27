@@ -60,19 +60,20 @@ QLineEdit:focus, QTextEdit:focus {
 }
 
 /* Buttons */
+/* Buttons */
 QPushButton {
-    background-color: #a6c5e229; /* Button Default (Transparent-ish) */
-    color: #B6C2CF;
+    background-color: #0079bf; /* Trello Blue */
+    color: #ffffff;
     border: none;
     border-radius: 3px;
     padding: 8px 12px;
     font-weight: 600;
 }
 QPushButton:hover {
-    background-color: #a6c5e252; /* Lighter on hover */
+    background-color: #026aa7; /* Slightly darker blue */
 }
 QPushButton:pressed {
-    background-color: #a6c5e214;
+    background-color: #055a8c;
 }
 
 /* Primary/Action Buttons (You might need to assign objectNames or classes to distinguish) */

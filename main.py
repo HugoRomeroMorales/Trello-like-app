@@ -154,61 +154,85 @@ class MainWindow(QtWidgets.QWidget):
         frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         layout = QtWidgets.QVBoxLayout(frame)
         
+        # Header Layout
+        header_layout = QtWidgets.QHBoxLayout()
+        
         # Header (Label)
         lbl = QtWidgets.QLabel(lista.titulo)
         lbl.setStyleSheet("font-weight: bold; font-size: 14px;")
-        lbl.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        # Use functools.partial or lambda with default arg to capture 'lista' correctly if loop involved, 
-        # but here 'lista' is local args so lambda is fine.
-        lbl.customContextMenuRequested.connect(lambda pos, l=lista: self.mostrar_menu_lista(pos, lbl, l))
-        layout.addWidget(lbl)
+        header_layout.addWidget(lbl)
+        
+        # Header Buttons
+        btn_edit_list = QtWidgets.QPushButton("✎")
+        btn_edit_list.setFixedWidth(30)
+        btn_edit_list.setToolTip("Renombrar Lista")
+        btn_edit_list.clicked.connect(lambda _, l=lista: self.renombrar_lista_ui(l))
+        header_layout.addWidget(btn_edit_list)
+
+        btn_delete_list = QtWidgets.QPushButton("🗑")
+        btn_delete_list.setFixedWidth(30)
+        btn_delete_list.setToolTip("Eliminar Lista")
+        btn_delete_list.clicked.connect(lambda _, l=lista: self.eliminar_lista_ui(l))
+        header_layout.addWidget(btn_delete_list)
+        
+        layout.addLayout(header_layout)
         
         # List Widget (Cards)
         list_widget = QtWidgets.QListWidget()
         list_widget.setProperty("list_id", lista.id)
-        list_widget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        list_widget.customContextMenuRequested.connect(lambda pos, lw=list_widget, lid=lista.id: self.mostrar_menu_tarjeta(pos, lw, lid))
 
         for card in lista.cards:
-            item = QtWidgets.QListWidgetItem(card.titulo)
-            item.setData(QtCore.Qt.UserRole, card.id) # Store card ID
+            item = QtWidgets.QListWidgetItem()
+            
+            # Custom Widget for Card
+            card_widget = QtWidgets.QWidget()
+            card_layout = QtWidgets.QHBoxLayout(card_widget)
+            card_layout.setContentsMargins(5, 5, 5, 5)
+            
+            lbl_card = QtWidgets.QLabel(card.titulo)
+            card_layout.addWidget(lbl_card)
+            
+            btn_edit_card = QtWidgets.QPushButton("✎")
+            btn_edit_card.setFixedWidth(25)
+            btn_edit_card.clicked.connect(lambda _, l_id=lista.id, c=card: self.renombrar_tarjeta_ui(l_id, c))
+            card_layout.addWidget(btn_edit_card)
+
+            btn_delete_card = QtWidgets.QPushButton("🗑")
+            btn_delete_card.setFixedWidth(25)
+            btn_delete_card.clicked.connect(lambda _, l_id=lista.id, c_id=card.id: self.eliminar_tarjeta_ui(l_id, c_id))
+            card_layout.addWidget(btn_delete_card)
+            
+            item.setSizeHint(card_widget.sizeHint())
             list_widget.addItem(item)
+            list_widget.setItemWidget(item, card_widget)
             
         layout.addWidget(list_widget)
         
         self.layoutColumnas.addWidget(frame)
 
-    def mostrar_menu_lista(self, pos, label_widget, lista):
-        menu = QtWidgets.QMenu()
-        action_rename = menu.addAction("Renombrar Lista")
-        action_delete = menu.addAction("Eliminar Lista")
-        
-        action = menu.exec_(label_widget.mapToGlobal(pos))
-        
-        if action == action_rename:
-            new_name, ok = QtWidgets.QInputDialog.getText(self, "Renombrar Lista", "Nuevo nombre:", text=lista.titulo)
-            if ok and new_name:
-                if self.listas_controller.renombrar_lista(lista.id, new_name):
-                    self.renderizar_columnas()
-                    
-        elif action == action_delete:
-            confirm = QtWidgets.QMessageBox.question(self, "Confirmar", f"¿Eliminar lista '{lista.titulo}'?", 
-                                                   QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-            if confirm == QtWidgets.QMessageBox.Yes:
-                if self.listas_controller.eliminar_lista(lista.id):
-                    self.renderizar_columnas()
+    def renombrar_lista_ui(self, lista):
+        new_name, ok = QtWidgets.QInputDialog.getText(self, "Renombrar Lista", "Nuevo nombre:", text=lista.titulo)
+        if ok and new_name:
+            if self.listas_controller.renombrar_lista(lista.id, new_name):
+                self.renderizar_columnas()
 
-    def mostrar_menu_tarjeta(self, pos, list_widget, list_id):
-        item = list_widget.itemAt(pos)
-        if not item: return
-        
-        menu = QtWidgets.QMenu()
-        action_delete = menu.addAction("Eliminar Tarjeta")
-        
-        action = menu.exec_(list_widget.mapToGlobal(pos))
-        
-        if action == action_delete:
-            card_id = item.data(QtCore.Qt.UserRole)
+    def eliminar_lista_ui(self, lista):
+        confirm = QtWidgets.QMessageBox.question(self, "Confirmar", f"¿Eliminar lista '{lista.titulo}'?", 
+                                               QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        if confirm == QtWidgets.QMessageBox.Yes:
+            if self.listas_controller.eliminar_lista(lista.id):
+                self.renderizar_columnas()
+
+    def renombrar_tarjeta_ui(self, list_id, card):
+        new_name, ok = QtWidgets.QInputDialog.getText(self, "Renombrar Tarjeta", "Nuevo título:", text=card.titulo)
+        if ok and new_name:
+            if self.listas_controller.renombrar_tarjeta(list_id, card.id, new_name):
+                self.renderizar_columnas()
+
+    def eliminar_tarjeta_ui(self, list_id, card_id):
+        confirm = QtWidgets.QMessageBox.question(self, "Confirmar", "¿Eliminar tarjeta?", 
+                                               QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        if confirm == QtWidgets.QMessageBox.Yes:
             if self.listas_controller.eliminar_tarjeta(list_id, card_id):
                 self.renderizar_columnas()
 
