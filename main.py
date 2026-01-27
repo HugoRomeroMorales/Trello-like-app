@@ -1,6 +1,7 @@
 import sys
 import os
 from PyQt5 import QtWidgets, uic, QtCore, QtGui
+from PyQt5.QtCore import QSettings
 from Controladores.Modelos import Tablero, User
 from Controladores.Listas import ListasController
 from Controladores.Controller_BD import SupabaseController
@@ -440,13 +441,27 @@ class MainWindow(QtWidgets.QWidget):
             print(f"Error: Could not find UI file at {ui_path}")
             sys.exit(1)
 
+        # Configuración de preferencias persistentes
+        self.settings = QSettings("MiniTrello", "App")
+        
         self.tema_actual = "brutalista"
         self.cargar_tema(self.tema_actual)
         self.db_controller = SupabaseController()
         self.current_user = User(username="UsuarioDemo")
+        
+        # Filtros avanzados
+        self.filtro_usuario = None  # None = Todos
+        self.filtro_columna = None  # None = Todas
+        
+        # Tamaño de fuente (cargar de settings o usar default)
+        self.tamano_fuente = self.settings.value("tamano_fuente", 14, type=int)
+        
         self.configurar_conexiones()
         self.pestanasPrincipal.setCurrentIndex(0)
         self.cargar_tableros()
+        
+        # Aplicar tamaño de fuente guardado
+        self.aplicar_tamano_fuente(self.tamano_fuente)
 
     def cargar_tema(self, nombre_tema):
         filename = "trello_oscuro.qss" if nombre_tema == "oscuro" else "trello_claro.qss" if nombre_tema == "claro" else "brutalista_salmon.qss"
@@ -463,7 +478,6 @@ class MainWindow(QtWidgets.QWidget):
         self.btnBorrarTablero.clicked.connect(self.borrar_tablero_seleccionado)
         self.btnCerrarSesion.clicked.connect(self.cerrar_sesion)
         self.listaTableros.itemDoubleClicked.connect(self.abrir_tablero_seleccionado)
-        self.btnNuevoTablero.clicked.connect(self.crear_tablero)
         self.txtBuscarTarjetas.textChanged.connect(self.buscar_tarjetas)
 
         if hasattr(self, "comboTema"):
@@ -475,22 +489,191 @@ class MainWindow(QtWidgets.QWidget):
         if hasattr(self, "chkAutoGuardado"):
             self.chkAutoGuardado.stateChanged.connect(self.alternar_autoguardado)
 
+        # --- CONTROLES DE TAMAÑO DE FUENTE EN AJUSTES ---
+        if hasattr(self, "layoutAjustes"):
+            self._crear_controles_fuente()
+
         if not hasattr(self, 'btnPapeleraTableros'):
-            # Buscamos el layout donde están los botones de tableros
-            # Normalmente btnNuevoTablero está en un layout horizontal
             parent_layout = self.btnNuevoTablero.parentWidget().layout()
             
             self.btnPapeleraTableros = QtWidgets.QPushButton("🗑 Papelera Tableros")
             self.btnPapeleraTableros.setCursor(QtCore.Qt.PointingHandCursor)
             self.btnPapeleraTableros.setStyleSheet("background-color: #ECEFF1; color: #455A64; border: 1px solid #CFD8DC; padding: 6px; font-weight: bold;")
             self.btnPapeleraTableros.clicked.connect(self.abrir_papelera_tableros)
+            parent_layout.addWidget(self.btnPapeleraTableros)
 
         self.btnVolverATableros.clicked.connect(self.volver_a_tableros)
         self.btnNuevaColumna.clicked.connect(self.crear_nueva_lista)
         self.btnNuevaTarjeta.clicked.connect(self.crear_nueva_tarjeta)
         self.btnGuardarTablero.clicked.connect(self.guardar_tablero)
         self.txtBuscarTarjetas.textChanged.connect(self.buscar_tarjetas)
-        parent_layout.addWidget(self.btnPapeleraTableros)
+        
+        # --- FILTROS AVANZADOS EN BARRA DEL TABLERO ---
+        self._crear_controles_filtros()
+    
+    def _crear_controles_fuente(self):
+        """Crea los controles de tamaño de fuente en la pestaña Ajustes."""
+        # Contenedor horizontal para el control de fuente
+        fuente_container = QtWidgets.QWidget()
+        fuente_layout = QtWidgets.QHBoxLayout(fuente_container)
+        fuente_layout.setContentsMargins(0, 10, 0, 10)
+        
+        lbl_fuente = QtWidgets.QLabel("Tamaño de fuente:")
+        fuente_layout.addWidget(lbl_fuente)
+        
+        # Botón reducir
+        btn_menos = QtWidgets.QPushButton("−")
+        btn_menos.setFixedSize(30, 30)
+        btn_menos.clicked.connect(lambda: self._cambiar_fuente(-1))
+        fuente_layout.addWidget(btn_menos)
+        
+        # Slider
+        self.sliderFuente = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.sliderFuente.setMinimum(10)
+        self.sliderFuente.setMaximum(24)
+        self.sliderFuente.setValue(self.tamano_fuente)
+        self.sliderFuente.setFixedWidth(150)
+        self.sliderFuente.valueChanged.connect(self.aplicar_tamano_fuente)
+        fuente_layout.addWidget(self.sliderFuente)
+        
+        # Botón aumentar
+        btn_mas = QtWidgets.QPushButton("+")
+        btn_mas.setFixedSize(30, 30)
+        btn_mas.clicked.connect(lambda: self._cambiar_fuente(1))
+        fuente_layout.addWidget(btn_mas)
+        
+        # Label que muestra el valor actual
+        self.lblFuenteValor = QtWidgets.QLabel(f"{self.tamano_fuente}px")
+        self.lblFuenteValor.setFixedWidth(45)
+        fuente_layout.addWidget(self.lblFuenteValor)
+        
+        fuente_layout.addStretch()
+        
+        # Insertar después del comboTema (índice 2)
+        self.layoutAjustes.insertWidget(3, fuente_container)
+    
+    def _cambiar_fuente(self, delta):
+        """Cambia el tamaño de fuente en +/- delta."""
+        nuevo = self.sliderFuente.value() + delta
+        nuevo = max(10, min(24, nuevo))
+        self.sliderFuente.setValue(nuevo)
+    
+    def aplicar_tamano_fuente(self, size):
+        """Aplica el tamaño de fuente a toda la aplicación."""
+        self.tamano_fuente = size
+        self.settings.setValue("tamano_fuente", size)
+        
+        if hasattr(self, 'lblFuenteValor'):
+            self.lblFuenteValor.setText(f"{size}px")
+        
+        # Obtener el stylesheet actual y modificar el font-size global
+        app = QtWidgets.QApplication.instance()
+        current_style = self.styleSheet()
+        
+        # Añadir/sobrescribir el tamaño de fuente base
+        font_style = f"\n* {{ font-size: {size}px; }}"
+        
+        # Si ya hay un font-size global, reemplazarlo
+        import re
+        if re.search(r'\*\s*\{[^}]*font-size:', current_style):
+            current_style = re.sub(r'(\*\s*\{[^}]*font-size:)\s*\d+px', f'\\1 {size}px', current_style)
+            self.setStyleSheet(current_style)
+        else:
+            self.setStyleSheet(current_style + font_style)
+    
+    def _crear_controles_filtros(self):
+        """Crea los controles de filtro en la barra del tablero."""
+        # Buscar el layout de la barra superior del tablero
+        parent_layout = self.txtBuscarTarjetas.parentWidget().layout()
+        
+        # Separador visual
+        separator = QtWidgets.QFrame()
+        separator.setFrameShape(QtWidgets.QFrame.VLine)
+        separator.setFrameShadow(QtWidgets.QFrame.Sunken)
+        
+        # ComboBox para filtrar por usuario
+        self.comboFiltroUsuario = QtWidgets.QComboBox()
+        self.comboFiltroUsuario.setMinimumWidth(150)
+        self.comboFiltroUsuario.addItem("👤 Todos los usuarios", None)
+        self.comboFiltroUsuario.currentIndexChanged.connect(self._aplicar_filtro_usuario)
+        
+        # ComboBox para filtrar por columna
+        self.comboFiltroColumna = QtWidgets.QComboBox()
+        self.comboFiltroColumna.setMinimumWidth(150)
+        self.comboFiltroColumna.addItem("📋 Todas las columnas", None)
+        self.comboFiltroColumna.currentIndexChanged.connect(self._aplicar_filtro_columna)
+        
+        # Botón para limpiar filtros
+        self.btnLimpiarFiltros = QtWidgets.QPushButton("✕ Limpiar")
+        self.btnLimpiarFiltros.setFixedWidth(80)
+        self.btnLimpiarFiltros.clicked.connect(self._limpiar_filtros)
+        
+        # Insertar después del campo de búsqueda
+        idx = parent_layout.indexOf(self.txtBuscarTarjetas)
+        parent_layout.insertWidget(idx + 1, separator)
+        parent_layout.insertWidget(idx + 2, self.comboFiltroUsuario)
+        parent_layout.insertWidget(idx + 3, self.comboFiltroColumna)
+        parent_layout.insertWidget(idx + 4, self.btnLimpiarFiltros)
+    
+    def _cargar_opciones_filtros(self):
+        """Carga las opciones de los filtros basándose en el tablero actual."""
+        # Guardar selección actual
+        usuario_actual = self.comboFiltroUsuario.currentData()
+        columna_actual = self.comboFiltroColumna.currentData()
+        
+        # Limpiar y recargar usuarios
+        self.comboFiltroUsuario.blockSignals(True)
+        self.comboFiltroUsuario.clear()
+        self.comboFiltroUsuario.addItem("👤 Todos los usuarios", None)
+        
+        usuarios = self.db_controller.obtener_todos_usuarios()
+        for u in usuarios:
+            self.comboFiltroUsuario.addItem(f"👤 {u.username}", u.id)
+        
+        # Restaurar selección si existe
+        if usuario_actual:
+            idx = self.comboFiltroUsuario.findData(usuario_actual)
+            if idx >= 0:
+                self.comboFiltroUsuario.setCurrentIndex(idx)
+        self.comboFiltroUsuario.blockSignals(False)
+        
+        # Limpiar y recargar columnas
+        self.comboFiltroColumna.blockSignals(True)
+        self.comboFiltroColumna.clear()
+        self.comboFiltroColumna.addItem("📋 Todas las columnas", None)
+        
+        if hasattr(self, 'listas_controller'):
+            for lista in self.listas_controller.obtener_listas():
+                self.comboFiltroColumna.addItem(f"📋 {lista.titulo}", lista.id)
+        
+        # Restaurar selección si existe
+        if columna_actual:
+            idx = self.comboFiltroColumna.findData(columna_actual)
+            if idx >= 0:
+                self.comboFiltroColumna.setCurrentIndex(idx)
+        self.comboFiltroColumna.blockSignals(False)
+    
+    def _aplicar_filtro_usuario(self, index):
+        """Aplica el filtro por usuario."""
+        self.filtro_usuario = self.comboFiltroUsuario.currentData()
+        if hasattr(self, 'listas_controller'):
+            self.renderizar_columnas()
+    
+    def _aplicar_filtro_columna(self, index):
+        """Aplica el filtro por columna."""
+        self.filtro_columna = self.comboFiltroColumna.currentData()
+        if hasattr(self, 'listas_controller'):
+            self.renderizar_columnas()
+    
+    def _limpiar_filtros(self):
+        """Limpia todos los filtros activos."""
+        self.comboFiltroUsuario.setCurrentIndex(0)
+        self.comboFiltroColumna.setCurrentIndex(0)
+        self.txtBuscarTarjetas.clear()
+        self.filtro_usuario = None
+        self.filtro_columna = None
+        if hasattr(self, 'listas_controller'):
+            self.renderizar_columnas()
 
     def al_cambiar_tema(self, index):
         temas = ["oscuro", "claro", "brutalista"]
@@ -538,6 +721,9 @@ class MainWindow(QtWidgets.QWidget):
         self.lblNombreTablero.setText(f"Tablero: {tablero.titulo}")
         self.pestanasPrincipal.setCurrentIndex(1)
         self.renderizar_columnas()
+        
+        # Cargar opciones de filtros para este tablero
+        self._cargar_opciones_filtros()
         
         self.listas_controller.cargar_asignados_iniciales()
         
@@ -588,6 +774,9 @@ class MainWindow(QtWidgets.QWidget):
             if item.widget(): item.widget().setParent(None)
 
         for lista in self.listas_controller.obtener_listas():
+            # Aplicar filtro por columna
+            if self.filtro_columna and lista.id != self.filtro_columna:
+                continue
             self.agregar_columna_ui(lista)
 
         self.layoutColumnas.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum))
@@ -636,6 +825,12 @@ class MainWindow(QtWidgets.QWidget):
         list_widget.setUniformItemSizes(False)
 
         for card in lista.cards:
+            # Aplicar filtro por usuario asignado
+            if self.filtro_usuario:
+                asignado_ids = [u.id for u in card.assignees]
+                if self.filtro_usuario not in asignado_ids:
+                    continue
+            
             item = QtWidgets.QListWidgetItem()
             item.setData(QtCore.Qt.UserRole, card.id)
             item.setText("") 
