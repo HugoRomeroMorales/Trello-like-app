@@ -1,8 +1,8 @@
 /* =========================
-   trello_claro.qss
+   trello_claro.qss - Modern Edition
    ========================= */
 
-/* Trello Light Theme (Classic Blue) */
+/* Trello Light Theme (Classic Blue) - Modernized */
 
 /* Global Settings */
 * {
@@ -15,63 +15,77 @@ QWidget {
     background-color: #bbfafc;
 }
 
-/* Scrollbars */
+/* Scrollbars - Más modernos y sutiles */
 QScrollBar:vertical {
     border: none;
-    background: #ebecf0;
-    width: 12px;
+    background: transparent;
+    width: 10px;
 }
 QScrollBar::handle:vertical {
     background: #c1c7d0;
-    min-height: 20px;
-    border-radius: 6px;
+    min-height: 30px;
+    border-radius: 5px;
     margin: 2px;
 }
 QScrollBar::handle:vertical:hover {
     background: #a5adba;
 }
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    border: none;
+    background: none;
+    height: 0px;
+}
 
-/* Inputs */
+/* Inputs - Bordes más sutiles y enfoque mejorado */
 QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QComboBox {
     background-color: #ffffff;
-    border: 2px solid #dfe1e6;
-    border-radius: 3px;
-    padding: 6px;
+    border: 1px solid #dfe1e6;
+    border-radius: 6px;
+    padding: 8px 12px;
     color: #172b4d;
+    font-size: 14px;
 }
 QLineEdit:focus, QTextEdit:focus {
     border: 2px solid #0079bf;
+    padding: 7px 11px;
+}
+QLineEdit:hover, QTextEdit:hover {
+    border: 1px solid #b3bac5;
 }
 
-/* Buttons */
+/* Buttons - Modernizados con mejor jerarquía */
 QPushButton {
-    background-color: #002a720f;
-    color: #021941;
+    background-color: #091e420a;
+    color: #172b4d;
     border: none;
-    border-radius: 3px;
-    padding: 8px 12px;
+    border-radius: 6px;
+    padding: 10px 16px;
     font-weight: 600;
+    font-size: 14px;
 }
 QPushButton:hover {
     background-color: #091e4214;
 }
 QPushButton:pressed {
     background-color: #091e4229;
+    padding: 11px 16px 9px 16px;
 }
 
-/* Lists / Columns (Generic) */
+/* Lists / Columns (Generic) - Bordes más suaves */
 QFrame {
     background-color: #ebecf0;
     border-radius: 12px;
+    border: none;
 }
 
-/* Labels */
+/* Labels - Mejor jerarquía tipográfica */
 QLabel {
     color: #172b4d;
     background-color: transparent;
+    font-size: 14px;
 }
 
-/* List Widgets (genérico) */
+/* List Widgets (genérico) - Tarjetas más modernas */
 QListWidget {
     background-color: #ebecf0;
     border: none;
@@ -80,51 +94,57 @@ QListWidget {
 QListWidget::item {
     background-color: #ffffff;
     color: #172b4d;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    padding: 10px;
-    border: 1px solid #dfe1e6;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 12px;
+    border: none;
 }
 QListWidget::item:hover {
     background-color: #f4f5f7;
-    border: 1px solid #0079bf;
+    border: 1px solid #b3d4fc;
 }
 QListWidget::item:selected {
     background-color: #e4f7fa;
-    border: 1px solid #0079bf;
+    border: 2px solid #0079bf;
 }
 
-/* Tabs */
+/* Tabs - Modernizados */
 QTabWidget::pane {
-    border: 1px solid #dfe1e6;
+    border: none;
     background-color: #F4F5F7;
+    border-radius: 8px;
 }
 QTabBar::tab {
-    background: #ebecf0;
-    color: #42526e;
-    padding: 10px 15px;
+    background: transparent;
+    color: #5e6c84;
+    padding: 12px 20px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
-    margin-right: 2px;
+    margin-right: 4px;
+    font-size: 14px;
+    font-weight: 500;
 }
 QTabBar::tab:selected {
     background: #0079bf;
     color: #ffffff;
-    font-weight: bold;
+    font-weight: 600;
 }
 QTabBar::tab:hover:!selected {
-    background: #dcdfe4;
+    background: #091e420a;
+    color: #172b4d;
 }
 
-/* Menu */
+/* Menu - Más limpio */
 QMenu {
     background-color: #ffffff;
-    border: 1px solid #dfe1e6;
-    padding: 5px;
+    border: 1px solid #e1e4e8;
+    border-radius: 8px;
+    padding: 8px;
 }
 QMenu::item {
-    padding: 5px 20px;
-    border-radius: 4px;
+    padding: 8px 24px;
+    border-radius: 6px;
+    font-size: 14px;
 }
 QMenu::item:selected {
     background-color: #ebecf0;
@@ -140,34 +160,36 @@ QInputDialog {
 }
 
 /* -----------------------------------------------------------------
-   COLUMNAS DINÁMICAS (DRAG & DROP)
+   COLUMNAS DINÁMICAS (DRAG & DROP) - Modernizadas
    ----------------------------------------------------------------- */
 
 #columnaFrame {
     background-color: #ebecf0;
-    border: 1px solid #dfe1e6;
+    border: none;
     border-radius: 12px;
+    padding: 8px;
 }
 
 #lblColumnaHeader {
-    font-weight: bold;
-    font-size: 16px;
+    font-weight: 700;
+    font-size: 18px;
     color: #172b4d;
     border: none;
     background: transparent;
+    padding: 4px 8px;
 }
 
 #btnColumnaHeader {
     border: none;
     background: transparent;
     color: #6b778c;
-    font-size: 20px;
+    font-size: 22px;
     font-weight: bold;
 }
 #btnColumnaHeader:hover {
     background-color: #091e4214;
     color: #172b4d;
-    border-radius: 4px;
+    border-radius: 6px;
 }
 
 #listaTarjetas {
@@ -191,28 +213,32 @@ QInputDialog {
 
 #cardBody {
     background-color: #ffffff;
-    border-radius: 8px;
-    border: 1px solid #dfe1e6;
-    border-bottom: 2px solid #dfe1e6;
+    border-radius: 10px;
+    border: none;
+    padding: 2px;
+}
+#cardBody:hover {
+    background-color: #f9fafb;
 }
 
 #lblCardTitle {
     border: none;
     background: transparent;
     color: #172b4d;
-    font-weight: 400;
-    font-size: 14px;
+    font-weight: 500;
+    font-size: 15px;
+    padding: 2px 4px;
 }
 
 #btnCardAction {
     border: none;
-    background: #f4f5f7;
-    color: #42526e;
-    border-radius: 4px;
-    font-size: 18px;
+    background: transparent;
+    color: #6b778c;
+    border-radius: 6px;
+    font-size: 20px;
     font-weight: bold;
 }
 #btnCardAction:hover {
-    background: #ebecf0;
+    background: #091e420a;
     color: #172b4d;
 }

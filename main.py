@@ -445,6 +445,7 @@ class MainWindow(QtWidgets.QWidget):
 
         self.filtro_usuario = None
         self.filtro_columna = None
+        self.filtro_texto = None
 
         self.tamano_fuente = self.settings.value("tamano_fuente", 14, type=int)
 
@@ -639,6 +640,7 @@ class MainWindow(QtWidgets.QWidget):
         self.txtBuscarTarjetas.clear()
         self.filtro_usuario = None
         self.filtro_columna = None
+        self.filtro_texto = None
         if hasattr(self, 'listas_controller'):
             self.renderizar_columnas()
 
@@ -784,9 +786,16 @@ class MainWindow(QtWidgets.QWidget):
         list_widget.setUniformItemSizes(False)
 
         for card in lista.cards:
+            # Filtro por usuario
             if self.filtro_usuario:
                 asignado_ids = [u.id for u in card.assignees]
                 if self.filtro_usuario not in asignado_ids:
+                    continue
+            
+            # Filtro por texto de búsqueda
+            if self.filtro_texto:
+                titulo_lower = str(card.titulo).lower()
+                if self.filtro_texto not in titulo_lower:
                     continue
 
             item = QtWidgets.QListWidgetItem()
@@ -935,10 +944,9 @@ class MainWindow(QtWidgets.QWidget):
         pass
 
     def buscar_tarjetas(self, txt):
-        if not txt:
+        self.filtro_texto = txt.strip().lower() if txt.strip() else None
+        if hasattr(self, 'listas_controller'):
             self.renderizar_columnas()
-            return
-        self.renderizar_columnas()
 
     def cerrar_sesion(self):
         if confirmar_accion(self, "Salir", "¿Cerrar sesión?", "Sí, cerrar"):
