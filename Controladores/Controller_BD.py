@@ -5,6 +5,7 @@ import re
 try:
     from supabase import create_client, Client
 except ImportError:
+    print("ADVERTENCIA: El módulo 'supabase' no está instalado. Ejecuta: pip install supabase")
     create_client = None
     Client = None
 
@@ -51,8 +52,13 @@ class SupabaseController:
         if self.url and self.key and create_client:
             try:
                 self.client = create_client(self.url, self.key)
+                print("✓ Conexión a Supabase establecida correctamente")
             except Exception as e:
-                print(f"Error conectando a Supabase: {e}")
+                print(f"✗ Error conectando a Supabase: {e}")
+        elif not create_client:
+            print("✗ No se puede conectar a Supabase: módulo no instalado")
+        else:
+            print("✗ No se puede conectar a Supabase: URL o KEY no configuradas")
 
     # ===== MÉTODOS DE AUTENTICACIÓN =====
     def registrar_usuario(self, email: str, password: str, username: str = None) -> dict:
@@ -145,7 +151,9 @@ class SupabaseController:
             if response.data:
                 d = response.data[0]
                 return Tablero(titulo=d['titulo'], es_publico=d['es_publico'], id=d['id'], created_at=parse_supabase_datetime(d['created_at']))
-        except Exception: return None
+        except Exception as e:
+            print(f"Error creando tablero: {e}")
+            return None
 
     def eliminar_tablero(self, board_id: str) -> bool:
         if not self.client: return False
@@ -160,15 +168,22 @@ class SupabaseController:
     def obtener_listas(self, board_id: str) -> List[TrelloLista]:
         if not self.client: return []
         try:
-            # Filtrar solo las listas no eliminadas
             response = self.client.table('listas').select("*").eq('tablero_id', board_id).eq('eliminada', False).order('posicion').execute()
             lists = []
             for data in response.data:
-                t_list = TrelloLista(titulo=data['titulo'], tablero_id=data['tablero_id'], posicion=data['posicion'], id=data['id'], created_at=parse_supabase_datetime(data['created_at']))
+                t_list = TrelloLista(
+                    titulo=data['titulo'], 
+                    tablero_id=data['tablero_id'], 
+                    posicion=data['posicion'], 
+                    id=data['id'], 
+                    created_at=parse_supabase_datetime(data['created_at'])
+                )
                 t_list.cards = self.obtener_tarjetas(t_list.id)
                 lists.append(t_list)
             return lists
-        except Exception: return []
+        except Exception as e:
+            print(f"Error obteniendo listas: {e}")
+            return []
 
     def crear_lista(self, board_id: str, titulo: str, posicion: int) -> Optional[TrelloLista]:
         if not self.client: return None
@@ -178,7 +193,9 @@ class SupabaseController:
             if response.data:
                 d = response.data[0]
                 return TrelloLista(titulo=d['titulo'], tablero_id=d['tablero_id'], posicion=d['posicion'], id=d['id'], created_at=parse_supabase_datetime(d['created_at']))
-        except Exception: return None
+        except Exception as e:
+            print(f"Error creando lista/columna: {e}")
+            return None
 
     def eliminar_lista(self, list_id: str) -> bool:
         """Soft delete - Envía la lista a la papelera."""

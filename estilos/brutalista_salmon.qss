@@ -34,14 +34,15 @@ QScrollBar::handle:vertical:hover {
 /* Inputs */
 QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QComboBox {
     background-color: #ffffff;
-    border: 2px solid #FFC0CB;
-    border-radius: 3px;
-    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
     color: #0d1b2a;
     font-size: 15px;
 }
 QLineEdit:focus, QTextEdit:focus {
-    border: 2px solid #FA8072;
+    border: none;
+    background-color: #fff0f5;
 }
 
 /* Buttons */
@@ -49,10 +50,10 @@ QPushButton {
     background-color: #FA8072;
     color: #ffffff;
     border: none;
-    border-radius: 3px;
-    padding: 10px 16px;
-    font-weight: 600;
-    font-size: 15px;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-weight: bold;
+    font-size: 16px;
 }
 QPushButton:hover {
     background-color: #FF6347;
@@ -65,7 +66,7 @@ QPushButton:pressed {
 QFrame {
     background-color: #FFE4E1;
     border-radius: 12px;
-    border: 2px solid #FA8072;
+    border: none;
     margin: 4px;
 }
 
@@ -106,21 +107,21 @@ QListWidget::item {
     border-radius: 8px;
     margin-bottom: 8px;
     padding: 12px;
-    border: 2px solid #FA8072;
+    border: none;
     font-size: 15px;
 }
 QListWidget::item:hover {
     background-color: #fff0f5;
-    border: 2px solid #FF6347;
+    border: none;
 }
 QListWidget::item:selected {
     background-color: #ffe4e1;
-    border: 2px solid #E9967A;
+    border: none;
 }
 
 /* Tabs */
 QTabWidget::pane {
-    border: 1px solid #FFC0CB;
+    border: none;
     background-color: #FFF6F3;
 }
 QTabBar::tab {
@@ -146,8 +147,9 @@ QTabBar::tab:hover:!selected {
 /* Menu */
 QMenu {
     background-color: #ffffff;
-    border: 1px solid #FFC0CB;
+    border: none;
     padding: 5px;
+    border-radius: 8px;
 }
 QMenu::item {
     padding: 8px 20px;
@@ -199,7 +201,7 @@ QComboBox::down-arrow {
 /* 1. Columna */
 #columnaFrame {
     background-color: #FFE4E1;
-    border: 2px solid #FA8072;
+    border: none;
     border-radius: 12px;
 }
 
@@ -214,10 +216,10 @@ QComboBox::down-arrow {
 
 /* 3. Botones cabecera */
 #btnColumnaHeader {
-    border: 1px solid #bfbfbf;
-    background: #ffffff;
-    color: #333;
-    border-radius: 6px;
+    border: none;
+    background: #FA8072;
+    color: white;
+    border-radius: 8px;
 
     font-size: 24px;
     min-width: 46px;
@@ -227,9 +229,9 @@ QComboBox::down-arrow {
     padding-bottom: 3px;
 }
 #btnColumnaHeader:hover {
-    background: #FA8072;
+    background: #FF6347;
     color: white;
-    border: 1px solid #FA8072;
+    border: none;
 }
 
 /* 4. Lista contenedora */
@@ -256,7 +258,7 @@ QComboBox::down-arrow {
 #cardBody {
     background-color: #ffffff;
     border-radius: 10px;
-    border: 2px solid #FA8072;
+    border: none;
 }
 
 /* 6. Título tarjeta */
@@ -270,16 +272,16 @@ QComboBox::down-arrow {
 
 /* 7. Botones tarjeta */
 #btnCardAction {
-    border: 1px solid #cccccc;
-    background: #f0f0f0;
-    color: #000000;
-    border-radius: 6px;
-    font-size: 20px;
-    font-weight: bold;
-    padding: 0px;
-}
-#btnCardAction:hover {
+    border: none;
     background: #FA8072;
     color: white;
-    border: 1px solid #FA8072;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 4px;
+}
+#btnCardAction:hover {
+    background: #FF6347;
+    color: white;
+    border: none;
 }
