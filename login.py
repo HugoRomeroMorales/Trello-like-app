@@ -4,8 +4,14 @@ from PyQt5 import QtWidgets, uic, QtGui, QtCore
 from PyQt5.QtGui import QIcon
 from Controladores.Controller_BD import SupabaseController
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-ui_path = os.path.join(current_dir, "Pantallas", "Login.ui")
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+ui_path = resource_path(os.path.join("Pantallas", "Login.ui"))
 
 class LoginWindow(QtWidgets.QWidget):
     def __init__(self):
@@ -16,7 +22,7 @@ class LoginWindow(QtWidgets.QWidget):
             print(f"Error: Could not find UI file at {ui_path}")
             sys.exit(1)
         
-        self.setWindowIcon(QIcon("assets/logo.png"))
+        self.setWindowIcon(QIcon(resource_path("assets/logo.png")))
         self.setWindowTitle("Organizador de tareas - ALACSA Tecnología y BlockChain")
         self.db_controller = SupabaseController()
         
@@ -31,7 +37,7 @@ class LoginWindow(QtWidgets.QWidget):
             self.Error.hide()
 
     def configurar_logo_centrado(self):
-        logo_path = os.path.join(current_dir, "assets", "logo.png")
+        logo_path = resource_path(os.path.join("assets", "logo.png"))
         layout = self.layout()
         
         if not layout: return
@@ -63,7 +69,7 @@ class LoginWindow(QtWidgets.QWidget):
             layout.addStretch(1)
 
     def cargar_estilo(self):
-        style_path = os.path.join(current_dir, "estilos", "brutalista_salmon.qss")
+        style_path = resource_path(os.path.join("estilos", "brutalista_salmon.qss"))
         try:
             with open(style_path, "r", encoding="utf-8") as f:
                 style = f.read()

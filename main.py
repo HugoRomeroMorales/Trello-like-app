@@ -7,12 +7,18 @@ from Controladores.Modelos import User
 from Controladores.Listas import ListasController
 from Controladores.Controller_BD import SupabaseController
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-ui_path = os.path.join(current_dir, "Pantallas", "App.ui")
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+ui_path = resource_path(os.path.join("Pantallas", "App.ui"))
 
 
 def icono_svg(nombre_archivo: str, color: str = None) -> QtGui.QIcon:
-    ruta = os.path.join(current_dir, "assets", "icons", nombre_archivo)
+    ruta = resource_path(os.path.join("assets", "icons", nombre_archivo))
     if not os.path.exists(ruta):
         return QtGui.QIcon()
 
@@ -513,7 +519,7 @@ class MainWindow(QtWidgets.QWidget):
         if hasattr(self, "btnNuevaTarjeta"):
                 self.btnNuevaTarjeta.setObjectName("btnPrimary")
 
-        self.setWindowIcon(QIcon("assets/logo.png"))
+        self.setWindowIcon(QIcon(resource_path("assets/logo.png")))
         self.setWindowTitle("Organizador de tareas - ALACSA Tecnología y BlockChain")
         self.settings = QSettings("MiniTrello", "App")
 
@@ -547,7 +553,7 @@ class MainWindow(QtWidgets.QWidget):
             if nombre_tema == "claro"
             else "brutalista_salmon.qss"
         )
-        path = os.path.join(current_dir, "estilos", filename)
+        path = resource_path(os.path.join("estilos", filename))
         try:
             with open(path, "r", encoding="utf-8") as f:
                 self.setStyleSheet(f.read())
