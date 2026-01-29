@@ -2,6 +2,7 @@ import sys
 import os
 from PyQt5 import QtWidgets, uic, QtCore, QtGui, QtSvg
 from PyQt5.QtCore import QSettings
+from PyQt5.QtGui import QIcon
 from Controladores.Modelos import User
 from Controladores.Listas import ListasController
 from Controladores.Controller_BD import SupabaseController
@@ -512,6 +513,8 @@ class MainWindow(QtWidgets.QWidget):
         if hasattr(self, "btnNuevaTarjeta"):
                 self.btnNuevaTarjeta.setObjectName("btnPrimary")
 
+        self.setWindowIcon(QIcon("assets/logo.png"))
+        self.setWindowTitle("Organizador de tareas - ALACSA Tecnología y BlockChain")
         self.settings = QSettings("MiniTrello", "App")
 
         self.tema_actual = "brutalista"

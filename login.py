@@ -1,6 +1,7 @@
 import sys
 import os
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
+from PyQt5.QtGui import QIcon
 from Controladores.Controller_BD import SupabaseController
 
 # Ensure we can find the UI file
@@ -16,6 +17,8 @@ class LoginWindow(QtWidgets.QWidget):
             print(f"Error: Could not find UI file at {ui_path}")
             sys.exit(1)
         
+        self.setWindowIcon(QIcon("assets/logo.png"))
+        self.setWindowTitle("Organizador de tareas - ALACSA Tecnología y BlockChain")
         self.db_controller = SupabaseController()
         
         self.cargar_estilo()
