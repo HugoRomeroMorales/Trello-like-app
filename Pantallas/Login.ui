@@ -1,250 +1,265 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Login</class>
- <widget class="QWidget" name="Login">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1110</width>
-    <height>667</height>
-   </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>520</width>
-    <height>520</height>
-   </size>
-  </property>
-  <property name="windowTitle">
-   <string>MiniTrello - Login</string>
-  </property>
-  <layout class="QVBoxLayout" name="rootLayout">
-   <property name="leftMargin">
-    <number>24</number>
-   </property>
-   <property name="topMargin">
-    <number>24</number>
-   </property>
-   <property name="rightMargin">
-    <number>24</number>
-   </property>
-   <property name="bottomMargin">
-    <number>24</number>
-   </property>
-   <item>
-    <spacer name="Espacio7">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>80</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="centerRow">
-     <item>
-      <spacer name="Espacio4">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>80</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QFrame" name="Card">
-       <property name="minimumSize">
-        <size>
-         <width>420</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>420</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Plain</enum>
-       </property>
-       <property name="lineWidth">
-        <number>0</number>
-       </property>
-       <property name="midLineWidth">
-        <number>0</number>
-       </property>
-       <layout class="QVBoxLayout" name="cardLayout">
-        <property name="spacing">
-         <number>12</number>
+    <class>Login</class>
+    <widget class="QWidget" name="Login">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>1110</width>
+                <height>667</height>
+            </rect>
         </property>
-        <property name="leftMargin">
-         <number>22</number>
+        <property name="minimumSize">
+            <size>
+                <width>520</width>
+                <height>520</height>
+            </size>
         </property>
-        <property name="topMargin">
-         <number>22</number>
+        <property name="windowTitle">
+            <string>MiniTrello - Login</string>
         </property>
-        <property name="rightMargin">
-         <number>22</number>
-        </property>
-        <property name="bottomMargin">
-         <number>22</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="Titulo">
-          <property name="text">
-           <string>APP TABLAS</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="Subtitulo">
-          <property name="text">
-           <string>Inicia sesión para entrar al tablero.</string>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="Espacio1">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>6</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="Error">
-          <property name="visible">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="txtUsuario">
-          <property name="placeholderText">
-           <string> Email</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="Contrasena">
-          <property name="echoMode">
-           <enum>QLineEdit::Password</enum>
-          </property>
-          <property name="placeholderText">
-           <string>Contraseña</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="Espacio2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>6</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="Primary">
-          <property name="text">
-           <string>Iniciar sesión</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btnInvitado">
-          <property name="text">
-           <string>Entrar como invitado</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="Link">
-          <property name="text">
-           <string>Crear cuenta </string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="Espacio3">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <spacer name="Espacio5">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>80</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <spacer name="Espacio6">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>80</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-  </layout>
- </widget>
- <resources/>
- <connections/>
+        <layout class="QVBoxLayout" name="rootLayout">
+            <property name="leftMargin">
+                <number>24</number>
+            </property>
+            <property name="topMargin">
+                <number>24</number>
+            </property>
+            <property name="rightMargin">
+                <number>24</number>
+            </property>
+            <property name="bottomMargin">
+                <number>24</number>
+            </property>
+            <item>
+                <spacer name="Espacio7">
+                    <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                        <size>
+                            <width>20</width>
+                            <height>80</height>
+                        </size>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <layout class="QHBoxLayout" name="centerRow">
+                    <item>
+                        <spacer name="Espacio4">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                                <size>
+                                    <width>80</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item>
+                        <widget class="QFrame" name="Card">
+                            <property name="minimumSize">
+                                <size>
+                                    <width>420</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
+                            <property name="maximumSize">
+                                <size>
+                                    <width>420</width>
+                                    <height>16777215</height>
+                                </size>
+                            </property>
+                            <property name="frameShape">
+                                <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="frameShadow">
+                                <enum>QFrame::Plain</enum>
+                            </property>
+                            <property name="lineWidth">
+                                <number>0</number>
+                            </property>
+                            <property name="midLineWidth">
+                                <number>0</number>
+                            </property>
+                            <layout class="QVBoxLayout" name="cardLayout">
+                                <property name="spacing">
+                                    <number>12</number>
+                                </property>
+                                <property name="leftMargin">
+                                    <number>22</number>
+                                </property>
+                                <property name="topMargin">
+                                    <number>22</number>
+                                </property>
+                                <property name="rightMargin">
+                                    <number>22</number>
+                                </property>
+                                <property name="bottomMargin">
+                                    <number>22</number>
+                                </property>
+                                <item>
+                                    <widget class="QLabel" name="Titulo">
+                                        <property name="font">
+                                            <font>
+                                                <pointsize>11</pointsize>
+                                                <bold>true</bold>
+                                            </font>
+                                        </property>
+                                        <property name="text">
+                                            <string>Organización ALACSA Tecnología y BlockChain</string>
+                                        </property>
+                                        <property name="alignment">
+                                            <set>Qt::AlignCenter</set>
+                                        </property>
+                                        <property name="wordWrap">
+                                            <bool>true</bool>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QLabel" name="Subtitulo">
+                                        <property name="text">
+                                            <string>Inicia sesión para entrar al tablero.</string>
+                                        </property>
+                                        <property name="alignment">
+                                            <set>Qt::AlignCenter</set>
+                                        </property>
+                                        <property name="wordWrap">
+                                            <bool>true</bool>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <spacer name="Espacio1">
+                                        <property name="orientation">
+                                            <enum>Qt::Vertical</enum>
+                                        </property>
+                                        <property name="sizeHint" stdset="0">
+                                            <size>
+                                                <width>20</width>
+                                                <height>6</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </item>
+                                <item>
+                                    <widget class="QLabel" name="Error">
+                                        <property name="visible">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="text">
+                                            <string/>
+                                        </property>
+                                        <property name="alignment">
+                                            <set>Qt::AlignCenter</set>
+                                        </property>
+                                        <property name="wordWrap">
+                                            <bool>true</bool>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QLineEdit" name="txtUsuario">
+                                        <property name="placeholderText">
+                                            <string> Email</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QLineEdit" name="Contrasena">
+                                        <property name="echoMode">
+                                            <enum>QLineEdit::Password</enum>
+                                        </property>
+                                        <property name="placeholderText">
+                                            <string>Contraseña</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <spacer name="Espacio2">
+                                        <property name="orientation">
+                                            <enum>Qt::Vertical</enum>
+                                        </property>
+                                        <property name="sizeHint" stdset="0">
+                                            <size>
+                                                <width>20</width>
+                                                <height>6</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </item>
+                                <item>
+                                    <widget class="QPushButton" name="Primary">
+                                        <property name="text">
+                                            <string>Iniciar sesión</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QPushButton" name="btnInvitado">
+                                        <property name="text">
+                                            <string>Entrar como invitado</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QPushButton" name="Link">
+                                        <property name="text">
+                                            <string>Crear cuenta </string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <spacer name="Espacio3">
+                                        <property name="orientation">
+                                            <enum>Qt::Vertical</enum>
+                                        </property>
+                                        <property name="sizeHint" stdset="0">
+                                            <size>
+                                                <width>20</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </item>
+                            </layout>
+                        </widget>
+                    </item>
+                    <item>
+                        <spacer name="Espacio5">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                                <size>
+                                    <width>80</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <spacer name="Espacio6">
+                    <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                        <size>
+                            <width>20</width>
+                            <height>80</height>
+                        </size>
+                    </property>
+                </spacer>
+            </item>
+        </layout>
+    </widget>
+    <resources/>
+    <connections/>
 </ui>

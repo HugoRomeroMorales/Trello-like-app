@@ -39,8 +39,7 @@ def parse_supabase_datetime(date_string: str) -> datetime:
             base_date = date_string[: match.start()]
             date_string = f"{base_date}.{micros_digits}{timezone}"
         return datetime.fromisoformat(date_string)
-    except Exception as e:
-        print(f"Warning: Error parseando fecha '{date_string}': {e}")
+    except Exception:
         return datetime.now()
 
 
@@ -62,16 +61,16 @@ class SupabaseController:
         else:
             print("✗ No se puede conectar a Supabase: URL o KEY no configuradas")
 
-    # ===== AUTENTICACIÓN =====
+    # ===== AUTENTICACIÓN (ESTO ES LO QUE FALTABA) =====
     def registrar_usuario(self, email: str, password: str, username: str = None) -> dict:
         if not self.client:
             return {"success": False, "error": "Cliente no disponible"}
         try:
             response = self.client.auth.sign_up(
-                {"email": email, "password": password, "options": {"data": {"username": username or email.split("@")[0]}}}
+                {"email": email, "password": password, "options": {"data": {"username": username or email.split('@')[0]}}}
             )
             if response.user:
-                user_data = {"id": response.user.id, "username": username or email.split("@")[0]}
+                user_data = {"id": response.user.id, "username": username or email.split('@')[0]}
                 try:
                     self.client.table("usuarios").insert(user_data).execute()
                 except Exception:
@@ -134,17 +133,15 @@ class SupabaseController:
                 .order("created_at")
                 .execute()
             )
-            boards = []
-            for data in response.data:
-                boards.append(
-                    Tablero(
-                        titulo=data["titulo"],
-                        es_publico=data["es_publico"],
-                        id=data["id"],
-                        created_at=parse_supabase_datetime(data.get("created_at")),
-                    )
+            return [
+                Tablero(
+                    titulo=d["titulo"],
+                    es_publico=d.get("es_publico", False),
+                    id=d["id"],
+                    created_at=parse_supabase_datetime(d.get("created_at")),
                 )
-            return boards
+                for d in response.data
+            ]
         except Exception as e:
             print(f"Error obteniendo tableros: {e}")
             return []
@@ -153,12 +150,13 @@ class SupabaseController:
         if not self.client:
             return None
         try:
-            response = self.client.table("tableros").insert({"titulo": titulo, "es_publico": es_publico}).execute()
+            data = {"titulo": titulo, "es_publico": es_publico, "eliminada": False}
+            response = self.client.table("tableros").insert(data).execute()
             if response.data:
                 d = response.data[0]
                 return Tablero(
                     titulo=d["titulo"],
-                    es_publico=d["es_publico"],
+                    es_publico=d.get("es_publico", False),
                     id=d["id"],
                     created_at=parse_supabase_datetime(d.get("created_at")),
                 )
@@ -189,16 +187,16 @@ class SupabaseController:
                 .order("posicion")
                 .execute()
             )
+
             lists: List[TrelloLista] = []
-            for data in response.data:
+            for d in response.data:
                 t_list = TrelloLista(
-                    titulo=data["titulo"],
-                    tablero_id=data["tablero_id"],
-                    posicion=data["posicion"],
-                    id=data["id"],
-                    created_at=parse_supabase_datetime(data.get("created_at")),
+                    titulo=d["titulo"],
+                    tablero_id=d["tablero_id"],
+                    posicion=d.get("posicion", 0),
+                    id=d["id"],
+                    created_at=parse_supabase_datetime(d.get("created_at")),
                 )
-                # IMPORTANTE: tarjetas con assignees
                 t_list.cards = self.obtener_tarjetas(t_list.id)
                 lists.append(t_list)
             return lists
@@ -210,19 +208,37 @@ class SupabaseController:
         if not self.client:
             return None
         try:
-            response = self.client.table("listas").insert({"tablero_id": board_id, "titulo": titulo, "posicion": posicion}).execute()
+            data = {
+                "tablero_id": board_id,
+                "titulo": titulo,
+                "posicion": posicion,
+                "eliminada": False,
+            }
+            response = self.client.table("listas").insert(data).execute()
             if response.data:
                 d = response.data[0]
                 return TrelloLista(
                     titulo=d["titulo"],
                     tablero_id=d["tablero_id"],
-                    posicion=d["posicion"],
+                    posicion=d.get("posicion", 0),
                     id=d["id"],
                     created_at=parse_supabase_datetime(d.get("created_at")),
                 )
         except Exception as e:
             print(f"Error creando lista/columna: {e}")
         return None
+
+    def actualizar_lista(self, list_id: str, titulo: str = None) -> bool:
+        if not self.client:
+            return False
+        try:
+            if titulo is None or not titulo.strip():
+                return False
+            self.client.table("listas").update({"titulo": titulo}).eq("id", list_id).execute()
+            return True
+        except Exception as e:
+            print(f"Error actualizando lista: {e}")
+            return False
 
     def eliminar_lista(self, list_id: str) -> bool:
         if not self.client:
@@ -233,17 +249,6 @@ class SupabaseController:
         except Exception as e:
             print(f"Error enviando lista a papelera: {e}")
             return False
-
-    def actualizar_lista(self, list_id: str, titulo: str = None) -> bool:
-        if not self.client:
-            return False
-        try:
-            if titulo:
-                self.client.table("listas").update({"titulo": titulo}).eq("id", list_id).execute()
-                return True
-        except Exception:
-            return False
-        return False
 
     # ===== TARJETAS =====
     def obtener_tarjetas(self, list_id: str) -> List[Tarjeta]:
@@ -258,17 +263,17 @@ class SupabaseController:
                 .order("posicion")
                 .execute()
             )
+
             cards: List[Tarjeta] = []
-            for data in response.data:
+            for d in response.data:
                 card = Tarjeta(
-                    titulo=data["titulo"],
-                    lista_id=data["lista_id"],
-                    descripcion=data.get("descripcion", ""),
-                    posicion=data["posicion"],
-                    id=data["id"],
-                    created_at=parse_supabase_datetime(data.get("created_at")),
+                    titulo=d["titulo"],
+                    lista_id=d["lista_id"],
+                    descripcion=d.get("descripcion", ""),
+                    posicion=d.get("posicion", 0),
+                    id=d["id"],
+                    created_at=parse_supabase_datetime(d.get("created_at")),
                 )
-                # CLAVE: aquí ya cargamos asignados
                 card.assignees = self.obtener_asignados_tarjeta(card.id)
                 cards.append(card)
             return cards
@@ -280,23 +285,28 @@ class SupabaseController:
         if not self.client:
             return None
         try:
-            response = self.client.table("tarjetas").insert(
-                {"lista_id": list_id, "titulo": titulo, "descripcion": descripcion, "posicion": posicion}
-            ).execute()
+            data = {
+                "lista_id": list_id,
+                "titulo": titulo,
+                "descripcion": descripcion,
+                "posicion": posicion,
+                "eliminada": False,
+            }
+            response = self.client.table("tarjetas").insert(data).execute()
             if response.data:
                 d = response.data[0]
                 card = Tarjeta(
                     titulo=d["titulo"],
                     lista_id=d["lista_id"],
                     descripcion=d.get("descripcion", ""),
-                    posicion=d["posicion"],
+                    posicion=d.get("posicion", 0),
                     id=d["id"],
                     created_at=parse_supabase_datetime(d.get("created_at")),
                 )
                 card.assignees = []
                 return card
-        except Exception:
-            return None
+        except Exception as e:
+            print(f"Error creando tarjeta: {e}")
         return None
 
     def eliminar_tarjeta(self, card_id: str) -> bool:
@@ -306,7 +316,7 @@ class SupabaseController:
             self.client.table("tarjetas").update({"eliminada": True}).eq("id", card_id).execute()
             return True
         except Exception as e:
-            print(f"Error enviando a papelera: {e}")
+            print(f"Error enviando tarjeta a papelera: {e}")
             return False
 
     def actualizar_tarjeta(self, card_id: str, titulo: str = None, descripcion: str = None) -> bool:
@@ -314,16 +324,17 @@ class SupabaseController:
             return False
         try:
             data = {}
-            if titulo:
+            if titulo is not None and titulo.strip():
                 data["titulo"] = titulo
             if descripcion is not None:
                 data["descripcion"] = descripcion
-            if data:
-                self.client.table("tarjetas").update(data).eq("id", card_id).execute()
-                return True
-        except Exception:
+            if not data:
+                return False
+            self.client.table("tarjetas").update(data).eq("id", card_id).execute()
+            return True
+        except Exception as e:
+            print(f"Error actualizando tarjeta: {e}")
             return False
-        return False
 
     def actualizar_posicion_tarjeta(self, card_id: str, new_list_id: str, new_position: int) -> bool:
         if not self.client:
@@ -331,7 +342,8 @@ class SupabaseController:
         try:
             self.client.table("tarjetas").update({"lista_id": new_list_id, "posicion": new_position}).eq("id", card_id).execute()
             return True
-        except Exception:
+        except Exception as e:
+            print(f"Error moviendo tarjeta: {e}")
             return False
 
     # ===== USUARIOS / ASIGNACIONES =====

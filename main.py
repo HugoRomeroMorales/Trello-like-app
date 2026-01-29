@@ -1,6 +1,6 @@
 import sys
 import os
-from PyQt5 import QtWidgets, uic, QtCore, QtGui
+from PyQt5 import QtWidgets, uic, QtCore, QtGui, QtSvg
 from PyQt5.QtCore import QSettings
 from Controladores.Modelos import User
 from Controladores.Listas import ListasController
@@ -10,11 +10,30 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 ui_path = os.path.join(current_dir, "Pantallas", "App.ui")
 
 
-def icono_svg(nombre_archivo: str) -> QtGui.QIcon:
-    return QtGui.QIcon(os.path.join(current_dir, "assets", "icons", nombre_archivo))
+def icono_svg(nombre_archivo: str, color: str = None) -> QtGui.QIcon:
+    ruta = os.path.join(current_dir, "assets", "icons", nombre_archivo)
+    if not os.path.exists(ruta):
+        return QtGui.QIcon()
+
+    if color:
+        try:
+            with open(ruta, "r", encoding="utf-8") as f:
+                svg_content = f.read()
+
+            svg_colored = svg_content.replace("currentColor", color)
+            renderer = QtSvg.QSvgRenderer(QtCore.QByteArray(svg_colored.encode("utf-8")))
+            pixmap = QtGui.QPixmap(24, 24)
+            pixmap.fill(QtCore.Qt.transparent)
+            painter = QtGui.QPainter(pixmap)
+            renderer.render(painter)
+            painter.end()
+            return QtGui.QIcon(pixmap)
+        except Exception:
+            return QtGui.QIcon(ruta)
+
+    return QtGui.QIcon(ruta)
 
 
-# --- DIÁLOGO DE DETALLES Y ASIGNACIÓN ---
 class TarjetaDetalleDialog(QtWidgets.QDialog):
     def __init__(self, tarjeta, controller, list_id, parent=None):
         super().__init__(parent)
@@ -28,20 +47,20 @@ class TarjetaDetalleDialog(QtWidgets.QDialog):
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.setSpacing(15)
 
-        group_info = QtWidgets.QGroupBox("Información")
+        group_info = QtWidgets.QGroupBox("Informacion")
         form_layout = QtWidgets.QFormLayout(group_info)
 
         self.txt_titulo = QtWidgets.QLineEdit(tarjeta.titulo)
-        form_layout.addRow("Título:", self.txt_titulo)
+        form_layout.addRow("Titulo:", self.txt_titulo)
 
         self.txt_descripcion = QtWidgets.QPlainTextEdit(tarjeta.descripcion)
-        self.txt_descripcion.setPlaceholderText("Añade una descripción...")
+        self.txt_descripcion.setPlaceholderText("Anade una descripcion...")
         self.txt_descripcion.setMinimumHeight(100)
-        form_layout.addRow("Descripción:", self.txt_descripcion)
+        form_layout.addRow("Descripcion:", self.txt_descripcion)
 
         main_layout.addWidget(group_info)
 
-        group_assign = QtWidgets.QGroupBox("Usuarios Asignados")
+        group_assign = QtWidgets.QGroupBox("Usuarios asignados")
         assign_layout = QtWidgets.QVBoxLayout(group_assign)
 
         add_layout = QtWidgets.QHBoxLayout()
@@ -63,7 +82,7 @@ class TarjetaDetalleDialog(QtWidgets.QDialog):
         self.list_assigned.setFixedHeight(80)
         assign_layout.addWidget(self.list_assigned)
 
-        btn_quitar = QtWidgets.QPushButton("Quitar Seleccionado")
+        btn_quitar = QtWidgets.QPushButton("Quitar seleccionado")
         btn_quitar.clicked.connect(self.quitar_usuario)
         btn_quitar.setStyleSheet("color: red; border: 1px solid #ffcccc; border-radius: 4px;")
         assign_layout.addWidget(btn_quitar)
@@ -76,7 +95,7 @@ class TarjetaDetalleDialog(QtWidgets.QDialog):
         btn_cancelar = QtWidgets.QPushButton("Cancelar")
         btn_cancelar.clicked.connect(self.reject)
 
-        self.btn_guardar = QtWidgets.QPushButton("Guardar Cambios")
+        self.btn_guardar = QtWidgets.QPushButton("Guardar cambios")
         self.btn_guardar.setStyleSheet(
             "background-color: #FA8072; color: white; font-weight: bold; padding: 8px; border-radius: 4px;"
         )
@@ -90,7 +109,7 @@ class TarjetaDetalleDialog(QtWidgets.QDialog):
     def refrescar_lista_asignados(self):
         self.list_assigned.clear()
         for u in getattr(self.tarjeta, "assignees", []):
-            self.list_assigned.addItem(f"👤 {u.username}")
+            self.list_assigned.addItem(f"{u.username}")
 
     def asignar_usuario(self):
         uid = self.combo_users.currentData()
@@ -101,14 +120,13 @@ class TarjetaDetalleDialog(QtWidgets.QDialog):
             return
 
         if self.controller.gestionar_asignacion(self.list_id, self.tarjeta.id, uid, True):
-            # IMPORTANTE: actualizar la tarjeta del dialog con lo que haya quedado en BD
             self.tarjeta.assignees = self.controller.db.obtener_asignados_tarjeta(self.tarjeta.id)
             self.refrescar_lista_asignados()
 
-            # refrescar tablero si el parent es MainWindow
-            parent = self.parent()
-            if parent and hasattr(parent, "renderizar_columnas"):
-                parent.renderizar_columnas()
+            if self.parent() and hasattr(self.parent(), "recargar_tablero"):
+                self.parent().recargar_tablero()
+            if self.parent() and hasattr(self.parent(), "renderizar_columnas"):
+                self.parent().renderizar_columnas()
 
     def quitar_usuario(self):
         row = self.list_assigned.currentRow()
@@ -120,15 +138,15 @@ class TarjetaDetalleDialog(QtWidgets.QDialog):
             self.tarjeta.assignees = self.controller.db.obtener_asignados_tarjeta(self.tarjeta.id)
             self.refrescar_lista_asignados()
 
-            parent = self.parent()
-            if parent and hasattr(parent, "renderizar_columnas"):
-                parent.renderizar_columnas()
+            if self.parent() and hasattr(self.parent(), "recargar_tablero"):
+                self.parent().recargar_tablero()
+            if self.parent() and hasattr(self.parent(), "renderizar_columnas"):
+                self.parent().renderizar_columnas()
 
     def get_data(self):
         return self.txt_titulo.text(), self.txt_descripcion.toPlainText()
 
 
-# --- LISTA DRAG & DROP ---
 class ListaDragDrop(QtWidgets.QListWidget):
     cardMoved = QtCore.pyqtSignal(str, str, str)
 
@@ -155,7 +173,7 @@ class ListaDragDrop(QtWidgets.QListWidget):
         event.accept()
 
 
-def confirmar_accion(parent, titulo, texto, texto_si="Sí", texto_no="No"):
+def confirmar_accion(parent, titulo, texto, texto_si="Si", texto_no="No"):
     msg = QtWidgets.QMessageBox(parent)
     msg.setIcon(QtWidgets.QMessageBox.Question)
     msg.setWindowTitle(titulo)
@@ -185,6 +203,293 @@ def confirmar_accion(parent, titulo, texto, texto_si="Sí", texto_no="No"):
 
     msg.exec()
     return msg.clickedButton() == btn_si
+
+
+class PapeleraTablerosDialog(QtWidgets.QDialog):
+    def __init__(self, db_controller, parent=None):
+        super().__init__(parent)
+        self.db = db_controller
+        self.setWindowTitle("Papelera de tableros")
+        self.setMinimumSize(400, 300)
+        self.setStyleSheet("background-color: white;")
+
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.addWidget(QtWidgets.QLabel("Tableros eliminados"))
+
+        self.lista = QtWidgets.QListWidget()
+        layout.addWidget(self.lista)
+
+        btn_layout = QtWidgets.QHBoxLayout()
+
+        btn_restaurar = QtWidgets.QPushButton("Restaurar")
+        btn_restaurar.setStyleSheet("background-color: #4CAF50; color: white; padding: 6px;")
+        btn_restaurar.clicked.connect(self.restaurar)
+
+        btn_borrar = QtWidgets.QPushButton("Borrar definitivamente")
+        btn_borrar.setStyleSheet("background-color: #f44336; color: white; padding: 6px;")
+        btn_borrar.clicked.connect(self.borrar_final)
+
+        btn_layout.addWidget(btn_restaurar)
+        btn_layout.addWidget(btn_borrar)
+        layout.addLayout(btn_layout)
+
+        self.cargar()
+
+    def cargar(self):
+        self.lista.clear()
+        self.tableros = self.db.obtener_papelera_tableros()
+        if not self.tableros:
+            self.lista.addItem("Papelera vacia")
+            return
+        for t in self.tableros:
+            item = QtWidgets.QListWidgetItem(f"{t.titulo}")
+            item.setData(QtCore.Qt.UserRole, t.id)
+            self.lista.addItem(item)
+
+    def restaurar(self):
+        row = self.lista.currentRow()
+        if row < 0:
+            QtWidgets.QMessageBox.warning(self, "Aviso", "Selecciona un tablero primero")
+            return
+
+        if confirmar_accion(self, "Confirmar", "Quieres restaurar este tablero?", "Si, restaurar"):
+            tid = self.lista.currentItem().data(QtCore.Qt.UserRole)
+            if self.db.restaurar_tablero(tid):
+                self.cargar()
+                if self.parent() and hasattr(self.parent(), "cargar_tableros"):
+                    self.parent().cargar_tableros()
+                QtWidgets.QMessageBox.information(self, "Listo", "Tablero restaurado")
+
+    def borrar_final(self):
+        row = self.lista.currentRow()
+        if row < 0:
+            QtWidgets.QMessageBox.warning(self, "Aviso", "Selecciona un tablero primero")
+            return
+
+        if confirmar_accion(
+            self,
+            "Peligro",
+            "Borrar para siempre? Se perdera todo el contenido. No se puede deshacer.",
+            "Si, borrar",
+            "Cancelar",
+        ):
+            tid = self.lista.currentItem().data(QtCore.Qt.UserRole)
+            if self.db.eliminar_tablero_definitivamente(tid):
+                self.cargar()
+
+
+class PapeleraListasDialog(QtWidgets.QDialog):
+    def __init__(self, controller, board_id: str, parent=None):
+        super().__init__(parent)
+        self.controller = controller
+        self.board_id = board_id
+
+        self.setWindowTitle("Papelera de columnas")
+        self.setMinimumSize(500, 400)
+        self.setStyleSheet("background-color: #ffffff;")
+
+        layout = QtWidgets.QVBoxLayout(self)
+
+        lbl = QtWidgets.QLabel("Columnas eliminadas")
+        lbl.setStyleSheet("font-size: 18px; font-weight: bold; color: #333;")
+        layout.addWidget(lbl)
+
+        self.lista_papelera = QtWidgets.QListWidget()
+        self.lista_papelera.setStyleSheet(
+            """
+            QListWidget { border: 1px solid #ccc; border-radius: 5px; }
+            QListWidget::item { padding: 10px; border-bottom: 1px solid #eee; }
+            """
+        )
+        layout.addWidget(self.lista_papelera)
+
+        btn_layout = QtWidgets.QHBoxLayout()
+
+        self.btn_restaurar = QtWidgets.QPushButton("Restaurar")
+        self.btn_restaurar.setStyleSheet("background-color: #4CAF50; color: white; padding: 8px; font-weight: bold;")
+        self.btn_restaurar.clicked.connect(self.restaurar_seleccionada)
+
+        self.btn_borrar = QtWidgets.QPushButton("Eliminar definitivamente")
+        self.btn_borrar.setStyleSheet("background-color: #f44336; color: white; padding: 8px; font-weight: bold;")
+        self.btn_borrar.clicked.connect(self.borrar_seleccionada)
+
+        btn_cerrar = QtWidgets.QPushButton("Cerrar")
+        btn_cerrar.clicked.connect(self.reject)
+
+        btn_layout.addWidget(self.btn_restaurar)
+        btn_layout.addWidget(self.btn_borrar)
+        btn_layout.addStretch()
+        btn_layout.addWidget(btn_cerrar)
+        layout.addLayout(btn_layout)
+
+        self.cargar_datos()
+
+    def cargar_datos(self):
+        self.lista_papelera.clear()
+        # CORRECCIÓN AQUÍ: No pasamos argumentos, el controller ya sabe el tablero
+        self.items_data = self.controller.obtener_papelera_listas()
+
+        if not self.items_data:
+            self.lista_papelera.addItem("La papelera esta vacia")
+            self.btn_restaurar.setEnabled(False)
+            self.btn_borrar.setEnabled(False)
+            return
+
+        self.btn_restaurar.setEnabled(True)
+        self.btn_borrar.setEnabled(True)
+
+        for lista in self.items_data:
+            item = QtWidgets.QListWidgetItem(f"{lista.titulo}")
+            item.setData(QtCore.Qt.UserRole, lista.id)
+            self.lista_papelera.addItem(item)
+
+    def restaurar_seleccionada(self):
+        row = self.lista_papelera.currentRow()
+        if row < 0:
+            QtWidgets.QMessageBox.warning(self, "Aviso", "Selecciona una columna primero")
+            return
+
+        if confirmar_accion(self, "Restaurar", "Quieres devolver esta columna al tablero?", "Si, restaurar"):
+            list_id = self.lista_papelera.currentItem().data(QtCore.Qt.UserRole)
+
+            if self.controller.restaurar_lista_papelera(list_id):
+                QtWidgets.QMessageBox.information(self, "Exito", "Columna restaurada")
+                self.cargar_datos()
+                if self.parent() and hasattr(self.parent(), "recargar_tablero"):
+                    self.parent().recargar_tablero()
+                if self.parent() and hasattr(self.parent(), "renderizar_columnas"):
+                    self.parent().renderizar_columnas()
+
+    def borrar_seleccionada(self):
+        row = self.lista_papelera.currentRow()
+        if row < 0:
+            QtWidgets.QMessageBox.warning(self, "Aviso", "Selecciona una columna primero")
+            return
+
+        if confirmar_accion(
+            self,
+            "Eliminar definitivamente",
+            "Borrar para siempre? Se perderan todas sus tarjetas. No se puede deshacer.",
+            "Si, borrar",
+            "Cancelar",
+        ):
+            list_id = self.lista_papelera.currentItem().data(QtCore.Qt.UserRole)
+
+            if self.controller.eliminar_lista_definitivamente(list_id):
+                self.cargar_datos()
+                if self.parent() and hasattr(self.parent(), "recargar_tablero"):
+                    self.parent().recargar_tablero()
+                if self.parent() and hasattr(self.parent(), "renderizar_columnas"):
+                    self.parent().renderizar_columnas()
+            else:
+                QtWidgets.QMessageBox.warning(self, "Error", "No se pudo eliminar")
+
+
+class PapeleraDialog(QtWidgets.QDialog):
+    def __init__(self, controller, board_id: str, parent=None):
+        super().__init__(parent)
+        self.controller = controller
+        self.board_id = board_id
+
+        self.setWindowTitle("Papelera de tarjetas")
+        self.setMinimumSize(500, 400)
+        self.setStyleSheet("background-color: #ffffff;")
+
+        layout = QtWidgets.QVBoxLayout(self)
+
+        lbl = QtWidgets.QLabel("Tarjetas eliminadas")
+        lbl.setStyleSheet("font-size: 18px; font-weight: bold; color: #333;")
+        layout.addWidget(lbl)
+
+        self.lista_papelera = QtWidgets.QListWidget()
+        self.lista_papelera.setStyleSheet(
+            """
+            QListWidget { border: 1px solid #ccc; border-radius: 5px; }
+            QListWidget::item { padding: 10px; border-bottom: 1px solid #eee; }
+            """
+        )
+        layout.addWidget(self.lista_papelera)
+
+        btn_layout = QtWidgets.QHBoxLayout()
+
+        self.btn_restaurar = QtWidgets.QPushButton("Restaurar")
+        self.btn_restaurar.setStyleSheet("background-color: #4CAF50; color: white; padding: 8px; font-weight: bold;")
+        self.btn_restaurar.clicked.connect(self.restaurar_seleccionada)
+
+        self.btn_borrar = QtWidgets.QPushButton("Eliminar definitivamente")
+        self.btn_borrar.setStyleSheet("background-color: #f44336; color: white; padding: 8px; font-weight: bold;")
+        self.btn_borrar.clicked.connect(self.borrar_seleccionada)
+
+        btn_cerrar = QtWidgets.QPushButton("Cerrar")
+        btn_cerrar.clicked.connect(self.reject)
+
+        btn_layout.addWidget(self.btn_restaurar)
+        btn_layout.addWidget(self.btn_borrar)
+        btn_layout.addStretch()
+        btn_layout.addWidget(btn_cerrar)
+        layout.addLayout(btn_layout)
+
+        self.cargar_datos()
+
+    def cargar_datos(self):
+        self.lista_papelera.clear()
+        # CORRECCIÓN AQUÍ: No pasamos argumentos, el controller ya sabe el tablero
+        self.items_data = self.controller.obtener_papelera()
+
+        if not self.items_data:
+            self.lista_papelera.addItem("La papelera esta vacia")
+            self.btn_restaurar.setEnabled(False)
+            self.btn_borrar.setEnabled(False)
+            return
+
+        self.btn_restaurar.setEnabled(True)
+        self.btn_borrar.setEnabled(True)
+
+        for card in self.items_data:
+            item = QtWidgets.QListWidgetItem(f"{card.titulo}")
+            item.setData(QtCore.Qt.UserRole, card.id)
+            self.lista_papelera.addItem(item)
+
+    def restaurar_seleccionada(self):
+        row = self.lista_papelera.currentRow()
+        if row < 0:
+            QtWidgets.QMessageBox.warning(self, "Aviso", "Selecciona una tarjeta primero")
+            return
+
+        if confirmar_accion(self, "Restaurar", "Quieres devolver esta tarjeta al tablero?", "Si, restaurar"):
+            card_id = self.lista_papelera.currentItem().data(QtCore.Qt.UserRole)
+
+            if self.controller.restaurar_tarjeta(card_id):
+                QtWidgets.QMessageBox.information(self, "Exito", "Tarjeta restaurada")
+                self.cargar_datos()
+                if self.parent() and hasattr(self.parent(), "recargar_tablero"):
+                    self.parent().recargar_tablero()
+                if self.parent() and hasattr(self.parent(), "renderizar_columnas"):
+                    self.parent().renderizar_columnas()
+
+    def borrar_seleccionada(self):
+        row = self.lista_papelera.currentRow()
+        if row < 0:
+            QtWidgets.QMessageBox.warning(self, "Aviso", "Selecciona una tarjeta primero")
+            return
+
+        if confirmar_accion(
+            self,
+            "Eliminar para siempre",
+            "Borrar definitivamente? Esta accion es irreversible.",
+            "Si, borrar",
+            "Cancelar",
+        ):
+            card_id = self.lista_papelera.currentItem().data(QtCore.Qt.UserRole)
+
+            if self.controller.eliminar_definitivamente(card_id):
+                self.cargar_datos()
+                if self.parent() and hasattr(self.parent(), "recargar_tablero"):
+                    self.parent().recargar_tablero()
+                if self.parent() and hasattr(self.parent(), "renderizar_columnas"):
+                    self.parent().renderizar_columnas()
+            else:
+                QtWidgets.QMessageBox.warning(self, "Error", "No se pudo eliminar")
 
 
 class MainWindow(QtWidgets.QWidget):
@@ -223,7 +528,13 @@ class MainWindow(QtWidgets.QWidget):
         self.aplicar_tamano_fuente(self.tamano_fuente)
 
     def cargar_tema(self, nombre_tema):
-        filename = "trello_oscuro.qss" if nombre_tema == "oscuro" else "trello_claro.qss" if nombre_tema == "claro" else "brutalista_salmon.qss"
+        filename = (
+            "trello_oscuro.qss"
+            if nombre_tema == "oscuro"
+            else "trello_claro.qss"
+            if nombre_tema == "claro"
+            else "brutalista_salmon.qss"
+        )
         path = os.path.join(current_dir, "estilos", filename)
         try:
             with open(path, "r", encoding="utf-8") as f:
@@ -234,15 +545,30 @@ class MainWindow(QtWidgets.QWidget):
     def configurar_conexiones(self):
         self.btnNuevoTablero.clicked.connect(self.crear_tablero)
         self.btnAbrirTablero.clicked.connect(self.abrir_tablero_seleccionado)
-        self.btnBorrarTablero.clicked.connect(self.borrar_tablero_seleccionado)
         self.btnCerrarSesion.clicked.connect(self.cerrar_sesion)
         self.listaTableros.itemDoubleClicked.connect(self.abrir_tablero_seleccionado)
 
-        self.txtBuscarTarjetas.textChanged.connect(self.buscar_tarjetas)
+        if not hasattr(self, "btnBorrarTablero"):
+            parent_layout = self.btnNuevoTablero.parentWidget().layout()
+
+            self.btnBorrarTablero = QtWidgets.QPushButton("Borrar tablero")
+            self.btnBorrarTablero.setCursor(QtCore.Qt.PointingHandCursor)
+            self.btnBorrarTablero.setIcon(icono_svg("trash.svg", "#D32F2F"))
+            self.btnBorrarTablero.setIconSize(QtCore.QSize(20, 20))
+            self.btnBorrarTablero.setStyleSheet(
+                "background-color: #FFEBEE; color: #D32F2F; border: 1px solid #FFCDD2; padding: 6px; font-weight: bold;"
+            )
+            self.btnBorrarTablero.clicked.connect(self.borrar_tablero_seleccionado)
+            parent_layout.insertWidget(2, self.btnBorrarTablero)
+        else:
+            self.btnBorrarTablero.clicked.connect(self.borrar_tablero_seleccionado)
+
+        if hasattr(self, "txtBuscarTarjetas"):
+            self.txtBuscarTarjetas.textChanged.connect(self.buscar_tarjetas)
 
         if hasattr(self, "comboTema"):
             self.comboTema.clear()
-            self.comboTema.addItems(["Modo Oscuro", "Modo Claro", "Brutalista Salmón"])
+            self.comboTema.addItems(["Modo oscuro", "Modo claro", "Brutalista salmon"])
             self.comboTema.currentIndexChanged.connect(self.al_cambiar_tema)
             self.comboTema.setCurrentIndex(0 if self.tema_actual == "oscuro" else 1 if self.tema_actual == "claro" else 2)
 
@@ -259,16 +585,28 @@ class MainWindow(QtWidgets.QWidget):
         self.btnNuevaTarjeta.clicked.connect(self.crear_nueva_tarjeta)
         self.btnGuardarTablero.clicked.connect(self.guardar_tablero)
 
-    # ===== FUENTE =====
+        if not hasattr(self, "btnPapeleraTableros"):
+            parent_layout = self.btnNuevoTablero.parentWidget().layout()
+
+            self.btnPapeleraTableros = QtWidgets.QPushButton("Papelera tableros")
+            self.btnPapeleraTableros.setCursor(QtCore.Qt.PointingHandCursor)
+            self.btnPapeleraTableros.setIcon(icono_svg("trash.svg"))
+            self.btnPapeleraTableros.setIconSize(QtCore.QSize(18, 18))
+            self.btnPapeleraTableros.setStyleSheet(
+                "background-color: #ECEFF1; color: #455A64; border: 1px solid #CFD8DC; padding: 6px; font-weight: bold;"
+            )
+            self.btnPapeleraTableros.clicked.connect(self.abrir_papelera_tableros)
+            parent_layout.addWidget(self.btnPapeleraTableros)
+
     def _crear_controles_fuente(self):
         fuente_container = QtWidgets.QWidget()
         fuente_layout = QtWidgets.QHBoxLayout(fuente_container)
         fuente_layout.setContentsMargins(0, 10, 0, 10)
 
-        lbl_fuente = QtWidgets.QLabel("Tamaño de fuente:")
+        lbl_fuente = QtWidgets.QLabel("Tamano de fuente:")
         fuente_layout.addWidget(lbl_fuente)
 
-        btn_menos = QtWidgets.QPushButton("−")
+        btn_menos = QtWidgets.QPushButton("-")
         btn_menos.setFixedSize(30, 30)
         btn_menos.clicked.connect(lambda: self._cambiar_fuente(-1))
         fuente_layout.addWidget(btn_menos)
@@ -315,8 +653,10 @@ class MainWindow(QtWidgets.QWidget):
         else:
             self.setStyleSheet(current_style + font_style)
 
-    # ===== FILTROS =====
     def _crear_controles_filtros(self):
+        if not hasattr(self, "txtBuscarTarjetas"):
+            return
+
         parent_layout = self.txtBuscarTarjetas.parentWidget().layout()
 
         separator = QtWidgets.QFrame()
@@ -325,15 +665,15 @@ class MainWindow(QtWidgets.QWidget):
 
         self.comboFiltroUsuario = QtWidgets.QComboBox()
         self.comboFiltroUsuario.setMinimumWidth(160)
-        self.comboFiltroUsuario.addItem("👤 Todos los usuarios", None)
+        self.comboFiltroUsuario.addItem("Todos los usuarios", None)
         self.comboFiltroUsuario.currentIndexChanged.connect(self._aplicar_filtro_usuario)
 
         self.comboFiltroColumna = QtWidgets.QComboBox()
         self.comboFiltroColumna.setMinimumWidth(160)
-        self.comboFiltroColumna.addItem("📋 Todas las columnas", None)
+        self.comboFiltroColumna.addItem("Todas las columnas", None)
         self.comboFiltroColumna.currentIndexChanged.connect(self._aplicar_filtro_columna)
 
-        self.btnLimpiarFiltros = QtWidgets.QPushButton("✕ Limpiar")
+        self.btnLimpiarFiltros = QtWidgets.QPushButton("Limpiar")
         self.btnLimpiarFiltros.setMinimumWidth(100)
         self.btnLimpiarFiltros.clicked.connect(self._limpiar_filtros)
 
@@ -344,15 +684,18 @@ class MainWindow(QtWidgets.QWidget):
         parent_layout.insertWidget(idx + 4, self.btnLimpiarFiltros)
 
     def _cargar_opciones_filtros(self):
+        if not hasattr(self, "comboFiltroUsuario") or not hasattr(self, "comboFiltroColumna"):
+            return
+
         usuario_actual = self.comboFiltroUsuario.currentData()
         columna_actual = self.comboFiltroColumna.currentData()
 
         self.comboFiltroUsuario.blockSignals(True)
         self.comboFiltroUsuario.clear()
-        self.comboFiltroUsuario.addItem("👤 Todos los usuarios", None)
+        self.comboFiltroUsuario.addItem("Todos los usuarios", None)
 
         for u in self.db_controller.obtener_todos_usuarios():
-            self.comboFiltroUsuario.addItem(f"👤 {u.username}", u.id)
+            self.comboFiltroUsuario.addItem(f"{u.username}", u.id)
 
         if usuario_actual:
             idx = self.comboFiltroUsuario.findData(usuario_actual)
@@ -362,12 +705,11 @@ class MainWindow(QtWidgets.QWidget):
 
         self.comboFiltroColumna.blockSignals(True)
         self.comboFiltroColumna.clear()
-        self.comboFiltroColumna.addItem("📋 Todas las columnas", None)
+        self.comboFiltroColumna.addItem("Todas las columnas", None)
 
-        # IMPORTANTE: aquí NO recargamos desde BD, usamos memoria
         if hasattr(self, "current_tablero") and getattr(self.current_tablero, "lists", None):
             for lista in self.current_tablero.lists:
-                self.comboFiltroColumna.addItem(f"📋 {lista.titulo}", lista.id)
+                self.comboFiltroColumna.addItem(f"{lista.titulo}", lista.id)
 
         if columna_actual:
             idx = self.comboFiltroColumna.findData(columna_actual)
@@ -375,33 +717,37 @@ class MainWindow(QtWidgets.QWidget):
                 self.comboFiltroColumna.setCurrentIndex(idx)
         self.comboFiltroColumna.blockSignals(False)
 
-    def _aplicar_filtro_usuario(self):
+    def _aplicar_filtro_usuario(self, _index: int):
         self.filtro_usuario = self.comboFiltroUsuario.currentData()
         if hasattr(self, "listas_controller"):
             self.renderizar_columnas()
 
-    def _aplicar_filtro_columna(self):
+    def _aplicar_filtro_columna(self, _index: int):
         self.filtro_columna = self.comboFiltroColumna.currentData()
         if hasattr(self, "listas_controller"):
             self.renderizar_columnas()
 
     def _limpiar_filtros(self):
-        self.comboFiltroUsuario.setCurrentIndex(0)
-        self.comboFiltroColumna.setCurrentIndex(0)
-        self.txtBuscarTarjetas.clear()
+        if hasattr(self, "comboFiltroUsuario"):
+            self.comboFiltroUsuario.setCurrentIndex(0)
+        if hasattr(self, "comboFiltroColumna"):
+            self.comboFiltroColumna.setCurrentIndex(0)
+        if hasattr(self, "txtBuscarTarjetas"):
+            self.txtBuscarTarjetas.clear()
+
         self.filtro_usuario = None
         self.filtro_columna = None
         self.filtro_texto = None
+
         if hasattr(self, "listas_controller"):
             self.renderizar_columnas()
 
-    # ===== TABLEROS =====
     def cargar_tableros(self):
         self.listaTableros.clear()
         try:
             self.tableros = self.db_controller.obtener_tableros()
             if not self.tableros:
-                self.listaTableros.addItem("No hay tableros. Crea uno nuevo!")
+                self.listaTableros.addItem("No hay tableros. Crea uno nuevo.")
             else:
                 for tablero in self.tableros:
                     self.listaTableros.addItem(f"{tablero.titulo} ({tablero.get_card_count()} tarjetas)")
@@ -410,14 +756,14 @@ class MainWindow(QtWidgets.QWidget):
             self.tableros = []
 
     def crear_tablero(self):
-        titulo, ok = QtWidgets.QInputDialog.getText(self, "Nuevo Tablero", "Nombre del tablero:")
+        titulo, ok = QtWidgets.QInputDialog.getText(self, "Nuevo tablero", "Nombre del tablero:")
         if ok and titulo:
             tablero = self.db_controller.crear_tablero(titulo)
             if tablero:
                 self.cargar_tableros()
-                QtWidgets.QMessageBox.information(self, "Éxito", f"Tablero '{titulo}' creado correctamente")
+                QtWidgets.QMessageBox.information(self, "Exito", f"Tablero '{titulo}' creado correctamente")
             else:
-                QtWidgets.QMessageBox.warning(self, "Error", "No se pudo crear el tablero.\nVerifica la conexión a la base de datos.")
+                QtWidgets.QMessageBox.warning(self, "Error", "No se pudo crear el tablero. Verifica la conexion a la BD.")
 
     def abrir_tablero_seleccionado(self):
         row = self.listaTableros.currentRow()
@@ -425,8 +771,9 @@ class MainWindow(QtWidgets.QWidget):
             self.mostrar_tablero(self.tableros[row])
 
     def recargar_tablero(self):
-        # Una sola llamada que trae listas + tarjetas + assignees (si tu SupabaseController está corregido)
-        self.current_tablero.lists = self.listas_controller.obtener_listas()
+        if not hasattr(self, "current_tablero") or not self.current_tablero:
+            return
+        self.current_tablero.lists = self.db_controller.obtener_listas(self.current_tablero.id)
 
     def mostrar_tablero(self, tablero):
         self.current_tablero = tablero
@@ -438,20 +785,43 @@ class MainWindow(QtWidgets.QWidget):
         self.pestanasPrincipal.setCurrentIndex(1)
 
         self._cargar_opciones_filtros()
+
+        if not hasattr(self, "btnPapelera"):
+            parent_layout = self.btnVolverATableros.parentWidget().layout()
+
+            self.btnPapelera = QtWidgets.QPushButton("Papelera tarjetas")
+            self.btnPapelera.setCursor(QtCore.Qt.PointingHandCursor)
+            self.btnPapelera.setIcon(icono_svg("trash.svg"))
+            self.btnPapelera.setIconSize(QtCore.QSize(18, 18))
+            self.btnPapelera.setStyleSheet(
+                "background-color: #FFEBEE; color: #D32F2F; border: 1px solid #FFCDD2; padding: 5px 10px; border-radius: 4px; font-weight: bold;"
+            )
+            self.btnPapelera.clicked.connect(self.abrir_papelera)
+
+            self.btnPapeleraColumnas = QtWidgets.QPushButton("Papelera columnas")
+            self.btnPapeleraColumnas.setCursor(QtCore.Qt.PointingHandCursor)
+            self.btnPapeleraColumnas.setIcon(icono_svg("trash.svg"))
+            self.btnPapeleraColumnas.setIconSize(QtCore.QSize(18, 18))
+            self.btnPapeleraColumnas.setStyleSheet(
+                "background-color: #E8F5E9; color: #388E3C; border: 1px solid #C8E6C9; padding: 5px 10px; border-radius: 4px; font-weight: bold;"
+            )
+            self.btnPapeleraColumnas.clicked.connect(self.abrir_papelera_columnas)
+
+            parent_layout.insertWidget(parent_layout.count() - 1, self.btnPapelera)
+            parent_layout.insertWidget(parent_layout.count() - 1, self.btnPapeleraColumnas)
+
         self.renderizar_columnas()
 
     def volver_a_tableros(self):
         self.pestanasPrincipal.setCurrentIndex(0)
         self.cargar_tableros()
 
-    # ===== UI COLUMNAS / TARJETAS =====
     def renderizar_columnas(self):
         while self.layoutColumnas.count():
             item = self.layoutColumnas.takeAt(0)
             if item.widget():
                 item.widget().setParent(None)
 
-        # IMPORTANTE: NO llamar a obtener_listas() aquí, ya está cargado
         for lista in getattr(self.current_tablero, "lists", []):
             if self.filtro_columna and lista.id != self.filtro_columna:
                 continue
@@ -472,6 +842,7 @@ class MainWindow(QtWidgets.QWidget):
         layout.setContentsMargins(5, 5, 5, 5)
 
         header = QtWidgets.QHBoxLayout()
+
         lbl = QtWidgets.QLabel(lista.titulo)
         lbl.setObjectName("lblColumnaHeader")
         header.addWidget(lbl)
@@ -602,7 +973,6 @@ class MainWindow(QtWidgets.QWidget):
         else:
             QtWidgets.QMessageBox.warning(self, "Error", "Fallo al mover")
 
-    # ===== ACCIONES =====
     def renombrar_lista_ui(self, lista):
         new_name, ok = QtWidgets.QInputDialog.getText(self, "Renombrar", "Nombre:", text=lista.titulo)
         if ok and new_name and self.listas_controller.renombrar_lista(lista.id, new_name):
@@ -611,20 +981,20 @@ class MainWindow(QtWidgets.QWidget):
             self.renderizar_columnas()
 
     def eliminar_lista_ui(self, lista):
-        if confirmar_accion(self, "Eliminar", f"¿Eliminar lista '{lista.titulo}'?", "Sí, eliminar"):
+        if confirmar_accion(self, "Eliminar", f"Eliminar lista '{lista.titulo}'?", "Si, eliminar"):
             if self.listas_controller.eliminar_lista(lista.id):
                 self.recargar_tablero()
                 self._cargar_opciones_filtros()
                 self.renderizar_columnas()
 
     def renombrar_tarjeta_ui(self, lid, card):
-        new, ok = QtWidgets.QInputDialog.getText(self, "Renombrar", "Título:", text=card.titulo)
+        new, ok = QtWidgets.QInputDialog.getText(self, "Renombrar", "Titulo:", text=card.titulo)
         if ok and new and self.listas_controller.renombrar_tarjeta(lid, card.id, new):
             self.recargar_tablero()
             self.renderizar_columnas()
 
     def eliminar_tarjeta_ui(self, lid, cid):
-        if confirmar_accion(self, "Eliminar", "¿Eliminar tarjeta?", "Sí, eliminar"):
+        if confirmar_accion(self, "Eliminar", "Eliminar tarjeta?", "Si, eliminar"):
             if self.listas_controller.eliminar_tarjeta(lid, cid):
                 self.recargar_tablero()
                 self.renderizar_columnas()
@@ -632,7 +1002,7 @@ class MainWindow(QtWidgets.QWidget):
     def crear_nueva_lista(self):
         if not hasattr(self, "current_tablero"):
             return
-        name, ok = QtWidgets.QInputDialog.getText(self, "Nueva Lista", "Nombre:")
+        name, ok = QtWidgets.QInputDialog.getText(self, "Nueva lista", "Nombre:")
         if ok and name:
             lista = self.listas_controller.crear_lista(name)
             if lista:
@@ -647,7 +1017,7 @@ class MainWindow(QtWidgets.QWidget):
             return
 
         lname, ok = QtWidgets.QInputDialog.getItem(
-            self, "Nueva Tarjeta", "Lista:", [l.titulo for l in self.current_tablero.lists], 0, False
+            self, "Nueva tarjeta", "Lista:", [l.titulo for l in self.current_tablero.lists], 0, False
         )
         if not ok:
             return
@@ -656,13 +1026,30 @@ class MainWindow(QtWidgets.QWidget):
         if not tlist:
             return
 
-        title, ok = QtWidgets.QInputDialog.getText(self, "Nueva Tarjeta", "Título:")
+        title, ok = QtWidgets.QInputDialog.getText(self, "Nueva tarjeta", "Titulo:")
         if ok and title:
             if self.listas_controller.agregar_tarjeta(tlist.id, title):
                 self.recargar_tablero()
                 self.renderizar_columnas()
 
-    # ===== OTROS =====
+    def abrir_papelera(self):
+        if not hasattr(self, "listas_controller"):
+            return
+        # CORRECCIÓN AQUÍ: No enviamos 'self.current_tablero.id'
+        dialog = PapeleraDialog(self.listas_controller, self.current_tablero.id, self)
+        dialog.exec_()
+
+    def abrir_papelera_columnas(self):
+        if not hasattr(self, "listas_controller"):
+            return
+        # CORRECCIÓN AQUÍ: No enviamos 'self.current_tablero.id'
+        dialog = PapeleraListasDialog(self.listas_controller, self.current_tablero.id, self)
+        dialog.exec_()
+
+    def abrir_papelera_tableros(self):
+        dialog = PapeleraTablerosDialog(self.db_controller, self)
+        dialog.exec_()
+
     def al_cambiar_tema(self, index):
         temas = ["oscuro", "claro", "brutalista"]
         self.tema_actual = temas[index]
@@ -679,7 +1066,7 @@ class MainWindow(QtWidgets.QWidget):
         if row < 0:
             QtWidgets.QMessageBox.warning(self, "Aviso", "Selecciona un tablero primero")
             return
-        if confirmar_accion(self, "Borrar Tablero", "¿Borrar este tablero?", "Sí, borrar"):
+        if confirmar_accion(self, "Borrar tablero", "Borrar este tablero?", "Si, borrar"):
             if self.db_controller.eliminar_tablero(self.tableros[row].id):
                 self.cargar_tableros()
 
@@ -692,7 +1079,7 @@ class MainWindow(QtWidgets.QWidget):
             self.renderizar_columnas()
 
     def cerrar_sesion(self):
-        if confirmar_accion(self, "Salir", "¿Cerrar sesión?", "Sí, cerrar"):
+        if confirmar_accion(self, "Salir", "Cerrar sesion?", "Si, cerrar"):
             self.sesion_cerrada.emit()
             self.pestanasPrincipal.setCurrentIndex(0)
 
