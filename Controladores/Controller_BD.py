@@ -61,7 +61,7 @@ class SupabaseController:
         else:
             print("✗ No se puede conectar a Supabase: URL o KEY no configuradas")
 
-    # ===== AUTENTICACIÓN (ESTO ES LO QUE FALTABA) =====
+    # ===== AUTENTICACIÓN =====
     def registrar_usuario(self, email: str, password: str, username: str = None) -> dict:
         if not self.client:
             return {"success": False, "error": "Cliente no disponible"}
@@ -126,22 +126,59 @@ class SupabaseController:
         if not self.client:
             return []
         try:
+            # === CAMBIO IMPORTANTE: Traemos listas y tarjetas anidadas para poder contar ===
             response = (
                 self.client.table("tableros")
-                .select("*")
+                .select("*, listas(id, eliminada, tarjetas(id, eliminada))") # Traemos IDs anidados
                 .eq("eliminada", False)
                 .order("created_at")
                 .execute()
             )
-            return [
-                Tablero(
+            
+            boards = []
+            for d in response.data:
+                # 1. Crear el Tablero
+                board = Tablero(
                     titulo=d["titulo"],
                     es_publico=d.get("es_publico", False),
                     id=d["id"],
                     created_at=parse_supabase_datetime(d.get("created_at")),
                 )
-                for d in response.data
-            ]
+                
+                # 2. Rellenar con listas/tarjetas "dummy" solo para que el contador funcione
+                raw_lists = d.get('listas', [])
+                for l_data in raw_lists:
+                    # Si la lista está borrada, la ignoramos
+                    if l_data.get('eliminada') is True: 
+                        continue
+                    
+                    # Creamos lista temporal
+                    lista_temp = TrelloLista(
+                        titulo="temp", 
+                        tablero_id=board.id, 
+                        posicion=0, 
+                        id=l_data['id']
+                    )
+                    
+                    # Rellenamos sus tarjetas
+                    raw_cards = l_data.get('tarjetas', [])
+                    for c_data in raw_cards:
+                        # Si la tarjeta está borrada, la ignoramos
+                        if c_data.get('eliminada') is True:
+                            continue
+                            
+                        card_temp = Tarjeta(
+                            titulo="temp",
+                            lista_id=lista_temp.id,
+                            id=c_data['id']
+                        )
+                        lista_temp.cards.append(card_temp)
+                    
+                    board.lists.append(lista_temp)
+                
+                boards.append(board)
+            return boards
+            
         except Exception as e:
             print(f"Error obteniendo tableros: {e}")
             return []
@@ -150,6 +187,7 @@ class SupabaseController:
         if not self.client:
             return None
         try:
+            # Forzar eliminada=False
             data = {"titulo": titulo, "es_publico": es_publico, "eliminada": False}
             response = self.client.table("tableros").insert(data).execute()
             if response.data:
@@ -228,6 +266,16 @@ class SupabaseController:
             print(f"Error creando lista/columna: {e}")
         return None
 
+    def eliminar_lista(self, list_id: str) -> bool:
+        if not self.client:
+            return False
+        try:
+            self.client.table("listas").update({"eliminada": True}).eq("id", list_id).execute()
+            return True
+        except Exception as e:
+            print(f"Error enviando lista a papelera: {e}")
+            return False
+
     def actualizar_lista(self, list_id: str, titulo: str = None) -> bool:
         if not self.client:
             return False
@@ -238,16 +286,6 @@ class SupabaseController:
             return True
         except Exception as e:
             print(f"Error actualizando lista: {e}")
-            return False
-
-    def eliminar_lista(self, list_id: str) -> bool:
-        if not self.client:
-            return False
-        try:
-            self.client.table("listas").update({"eliminada": True}).eq("id", list_id).execute()
-            return True
-        except Exception as e:
-            print(f"Error enviando lista a papelera: {e}")
             return False
 
     # ===== TARJETAS =====
@@ -316,7 +354,7 @@ class SupabaseController:
             self.client.table("tarjetas").update({"eliminada": True}).eq("id", card_id).execute()
             return True
         except Exception as e:
-            print(f"Error enviando tarjeta a papelera: {e}")
+            print(f"Error enviando a papelera: {e}")
             return False
 
     def actualizar_tarjeta(self, card_id: str, titulo: str = None, descripcion: str = None) -> bool:

@@ -503,6 +503,15 @@ class MainWindow(QtWidgets.QWidget):
             print(f"Error: Could not find UI file at {ui_path}")
             sys.exit(1)
 
+        if hasattr(self, "btnNuevoTablero"):
+                self.btnNuevoTablero.setObjectName("btnPrimary")
+
+        if hasattr(self, "btnNuevaColumna"):
+                self.btnNuevaColumna.setObjectName("btnPrimary")
+
+        if hasattr(self, "btnNuevaTarjeta"):
+                self.btnNuevaTarjeta.setObjectName("btnPrimary")
+
         self.settings = QSettings("MiniTrello", "App")
 
         self.tema_actual = "brutalista"
@@ -652,6 +661,19 @@ class MainWindow(QtWidgets.QWidget):
             self.setStyleSheet(current_style)
         else:
             self.setStyleSheet(current_style + font_style)
+
+        # --- RESPONSIVE TABS ---
+        tab_h = max(28, int(size * 2.2))
+        tab_w = max(70, int(size * 6))
+
+        self.pestanasPrincipal.tabBar().setMinimumHeight(tab_h)
+        self.pestanasPrincipal.tabBar().setIconSize(QtCore.QSize(int(size * 1.2), int(size * 1.2)))
+
+        # Opcional: si quieres que se note el “padding” al cambiar fuente
+        self.pestanasPrincipal.tabBar().setStyleSheet(
+            f"QTabBar::tab {{ padding: {max(6, int(size*0.6))}px {max(10, int(size*1.1))}px; min-width: {tab_w}px; }}"
+        )
+
 
     def _crear_controles_filtros(self):
         if not hasattr(self, "txtBuscarTarjetas"):

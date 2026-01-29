@@ -216,23 +216,22 @@ QComboBox::down-arrow {
 
 /* 3. Botones cabecera */
 #btnColumnaHeader {
+    background-color: #fa8072;
     border: none;
-    background: #FA8072;
-    color: white;
-    border-radius: 8px;
-
-    font-size: 24px;
-    min-width: 46px;
-    min-height: 46px;
-
-    font-weight: bold;
-    padding-bottom: 3px;
+    border-radius: 6px;
+    padding: 4px;
+    min-width: 28px;
+    min-height: 28px;
 }
+
 #btnColumnaHeader:hover {
-    background: #FF6347;
-    color: white;
-    border: none;
+    background-color: #ff6b5e;
 }
+
+#btnColumnaHeader:pressed {
+    background-color: #e85c50;
+}
+
 
 /* 4. Lista contenedora */
 #listaTarjetas {

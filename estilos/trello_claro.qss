@@ -1,10 +1,8 @@
 /* =========================
-   trello_claro.qss - Modern Edition
+   trello_claro.qss - Clean Modern
    ========================= */
 
-/* Trello Light Theme (Classic Blue) - Modernized */
-
-/* Global Settings */
+/* ===== GLOBAL ===== */
 * {
     font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     font-size: 14px;
@@ -12,10 +10,10 @@
 }
 
 QWidget {
-    background-color: #bbfafc;
+    background-color: #f4f5f7;
 }
 
-/* Scrollbars - Más modernos y sutiles */
+/* ===== SCROLLBARS ===== */
 QScrollBar:vertical {
     border: none;
     background: transparent;
@@ -23,222 +21,172 @@ QScrollBar:vertical {
 }
 QScrollBar::handle:vertical {
     background: #c1c7d0;
-    min-height: 30px;
     border-radius: 5px;
-    margin: 2px;
+    min-height: 30px;
 }
 QScrollBar::handle:vertical:hover {
     background: #a5adba;
 }
-QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-    border: none;
+QScrollBar::add-line,
+QScrollBar::sub-line {
     background: none;
-    height: 0px;
+    height: 0;
 }
 
-/* Inputs - Bordes más sutiles y enfoque mejorado */
-QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QComboBox {
+/* ===== INPUTS ===== */
+QLineEdit, QTextEdit, QPlainTextEdit, QComboBox {
     background-color: #ffffff;
     border: 1px solid #dfe1e6;
     border-radius: 6px;
-    padding: 8px 12px;
-    color: #172b4d;
-    font-size: 14px;
+    padding: 8px 10px;
 }
 QLineEdit:focus, QTextEdit:focus {
-    border: 2px solid #0079bf;
-    padding: 7px 11px;
-}
-QLineEdit:hover, QTextEdit:hover {
-    border: 1px solid #b3bac5;
+    border: 2px solid #2684ff;
+    padding: 7px 9px;
 }
 
-/* Buttons - Modernizados con mejor jerarquía */
+/* ===== BUTTONS ===== */
 QPushButton {
-    background-color: #091e420a;
-    color: #172b4d;
-    border: none;
+    background-color: #e4e6ea;
     border-radius: 6px;
-    padding: 10px 16px;
+    padding: 8px 14px;
     font-weight: 600;
-    font-size: 14px;
 }
 QPushButton:hover {
-    background-color: #091e4214;
+    background-color: #dfe1e6;
 }
 QPushButton:pressed {
-    background-color: #091e4229;
-    padding: 11px 16px 9px 16px;
+    background-color: #cdd2d4;
 }
 
-/* Lists / Columns (Generic) - Bordes más suaves */
-QFrame {
-    background-color: #ebecf0;
-    border-radius: 12px;
-    border: none;
-}
-
-/* Labels - Mejor jerarquía tipográfica */
-QLabel {
-    color: #172b4d;
-    background-color: transparent;
-    font-size: 14px;
-}
-
-/* List Widgets (genérico) - Tarjetas más modernas */
-QListWidget {
-    background-color: #ebecf0;
-    border: none;
-    outline: none;
-}
-QListWidget::item {
-    background-color: #ffffff;
-    color: #172b4d;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    padding: 12px;
-    border: none;
-}
-QListWidget::item:hover {
-    background-color: #f4f5f7;
-    border: 1px solid #b3d4fc;
-}
-QListWidget::item:selected {
-    background-color: #e4f7fa;
-    border: 2px solid #0079bf;
-}
-
-/* Tabs - Modernizados */
+/* ===== TABS ===== */
 QTabWidget::pane {
     border: none;
-    background-color: #F4F5F7;
-    border-radius: 8px;
+    background-color: #f4f5f7;
 }
 QTabBar::tab {
     background: transparent;
+    padding: 10px 18px;
     color: #5e6c84;
-    padding: 12px 20px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    margin-right: 4px;
-    font-size: 14px;
-    font-weight: 500;
 }
 QTabBar::tab:selected {
-    background: #0079bf;
-    color: #ffffff;
-    font-weight: 600;
-}
-QTabBar::tab:hover:!selected {
-    background: #091e420a;
-    color: #172b4d;
-}
-
-/* Menu - Más limpio */
-QMenu {
-    background-color: #ffffff;
-    border: 1px solid #e1e4e8;
-    border-radius: 8px;
-    padding: 8px;
-}
-QMenu::item {
-    padding: 8px 24px;
+    background: #2684ff;
+    color: white;
     border-radius: 6px;
-    font-size: 14px;
-}
-QMenu::item:selected {
-    background-color: #ebecf0;
-    color: #172b4d;
 }
 
-/* Dialogs */
-QMessageBox {
-    background-color: #ffffff;
-}
-QInputDialog {
-    background-color: #ffffff;
+/* ===== LISTAS GENERALES ===== */
+QListWidget {
+    background: transparent;
+    border: none;
 }
 
-/* -----------------------------------------------------------------
-   COLUMNAS DINÁMICAS (DRAG & DROP) - Modernizadas
-   ----------------------------------------------------------------- */
+/* =====================================================
+   COLUMNAS (TRELLO STYLE)
+   ===================================================== */
 
 #columnaFrame {
     background-color: #ebecf0;
-    border: none;
     border-radius: 12px;
     padding: 8px;
 }
 
+/* HEADER COLUMNA */
 #lblColumnaHeader {
+    font-size: 17px;
     font-weight: 700;
-    font-size: 18px;
-    color: #172b4d;
-    border: none;
-    background: transparent;
-    padding: 4px 8px;
+    padding: 4px 6px;
 }
 
+/* BOTONES HEADER COLUMNA */
 #btnColumnaHeader {
-    border: none;
     background: transparent;
-    color: #6b778c;
-    font-size: 22px;
-    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    padding: 6px;
 }
 #btnColumnaHeader:hover {
-    background-color: #091e4214;
-    color: #172b4d;
-    border-radius: 6px;
+    background-color: #dfe1e6;
 }
 
+/* ===== LISTA TARJETAS ===== */
 #listaTarjetas {
     background: transparent;
     border: none;
-    outline: none;
-    padding: 0px;
 }
 
-/* CLAVE: item invisible para evitar doble tarjeta */
+/* item invisible (usas widget custom) */
 #listaTarjetas::item {
     background: transparent;
     border: none;
-    padding: 0px;
-    margin: 0px;
-}
-#listaTarjetas::item:selected {
-    background: transparent;
-    border: none;
+    padding: 0;
+    margin: 0;
 }
 
+/* ===== TARJETA ===== */
 #cardBody {
     background-color: #ffffff;
     border-radius: 10px;
-    border: none;
-    padding: 2px;
+    padding: 6px;
 }
 #cardBody:hover {
-    background-color: #f9fafb;
+    background-color: #f4f5f7;
 }
 
+/* TÍTULO TARJETA */
 #lblCardTitle {
-    border: none;
-    background: transparent;
-    color: #172b4d;
-    font-weight: 500;
     font-size: 15px;
-    padding: 2px 4px;
+    font-weight: 500;
 }
 
+/* BOTONES TARJETA */
 #btnCardAction {
-    border: none;
     background: transparent;
-    color: #6b778c;
+    border: none;
     border-radius: 6px;
-    font-size: 20px;
-    font-weight: bold;
+    padding: 6px;
 }
 #btnCardAction:hover {
-    background: #091e420a;
-    color: #172b4d;
+    background-color: #e4e6ea;
 }
+
+/* ===== MENÚS ===== */
+QMenu {
+    background-color: #ffffff;
+    border: 1px solid #dfe1e6;
+    border-radius: 8px;
+}
+QMenu::item {
+    padding: 8px 22px;
+}
+QMenu::item:selected {
+    background-color: #ebecf0;
+}
+
+/* ===== DIALOGS ===== */
+QMessageBox, QInputDialog {
+    background-color: #ffffff;
+}
+
+
+/* =========================
+   BOTÓN PRIMARIO - NUEVO TABLERO
+   ========================= */
+
+#btnNuevoTablero {
+    background-color: #2684ff;
+    color: white;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 10px 18px;
+}
+
+#btnNuevoTablero:hover {
+    background-color: #1f6fe0;
+}
+
+#btnNuevoTablero:pressed {
+    background-color: #1a5fcc;
+}
+
+
