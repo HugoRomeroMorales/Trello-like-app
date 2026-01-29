@@ -6,7 +6,6 @@ import re
 try:
     from supabase import create_client, Client
 except ImportError:
-    print("ADVERTENCIA: El módulo 'supabase' no está instalado. Ejecuta: pip install supabase")
     create_client = None
     Client = None
 
@@ -56,10 +55,6 @@ class SupabaseController:
                 print("✓ Conexión a Supabase establecida correctamente")
             except Exception as e:
                 print(f"✗ Error conectando a Supabase: {e}")
-        elif not create_client:
-            print("✗ No se puede conectar a Supabase: módulo no instalado")
-        else:
-            print("✗ No se puede conectar a Supabase: URL o KEY no configuradas")
 
     # ===== AUTENTICACIÓN =====
     def registrar_usuario(self, email: str, password: str, username: str = None) -> dict:
@@ -126,10 +121,9 @@ class SupabaseController:
         if not self.client:
             return []
         try:
-            # === CAMBIO IMPORTANTE: Traemos listas y tarjetas anidadas para poder contar ===
             response = (
                 self.client.table("tableros")
-                .select("*, listas(id, eliminada, tarjetas(id, eliminada))") # Traemos IDs anidados
+                .select("*, listas(id, eliminada, tarjetas(id, eliminada))")
                 .eq("eliminada", False)
                 .order("created_at")
                 .execute()
@@ -137,7 +131,6 @@ class SupabaseController:
             
             boards = []
             for d in response.data:
-                # 1. Crear el Tablero
                 board = Tablero(
                     titulo=d["titulo"],
                     es_publico=d.get("es_publico", False),
@@ -145,14 +138,11 @@ class SupabaseController:
                     created_at=parse_supabase_datetime(d.get("created_at")),
                 )
                 
-                # 2. Rellenar con listas/tarjetas "dummy" solo para que el contador funcione
                 raw_lists = d.get('listas', [])
                 for l_data in raw_lists:
-                    # Si la lista está borrada, la ignoramos
                     if l_data.get('eliminada') is True: 
                         continue
                     
-                    # Creamos lista temporal
                     lista_temp = TrelloLista(
                         titulo="temp", 
                         tablero_id=board.id, 
@@ -160,10 +150,8 @@ class SupabaseController:
                         id=l_data['id']
                     )
                     
-                    # Rellenamos sus tarjetas
                     raw_cards = l_data.get('tarjetas', [])
                     for c_data in raw_cards:
-                        # Si la tarjeta está borrada, la ignoramos
                         if c_data.get('eliminada') is True:
                             continue
                             
@@ -187,7 +175,6 @@ class SupabaseController:
         if not self.client:
             return None
         try:
-            # Forzar eliminada=False
             data = {"titulo": titulo, "es_publico": es_publico, "eliminada": False}
             response = self.client.table("tableros").insert(data).execute()
             if response.data:

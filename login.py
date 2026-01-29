@@ -4,7 +4,6 @@ from PyQt5 import QtWidgets, uic, QtGui, QtCore
 from PyQt5.QtGui import QIcon
 from Controladores.Controller_BD import SupabaseController
 
-# Ensure we can find the UI file
 current_dir = os.path.dirname(os.path.abspath(__file__))
 ui_path = os.path.join(current_dir, "Pantallas", "Login.ui")
 
@@ -22,8 +21,7 @@ class LoginWindow(QtWidgets.QWidget):
         self.db_controller = SupabaseController()
         
         self.cargar_estilo()
-        
-        # --- AÑADIR LOGO Y CENTRAR TODO ---
+       
         self.configurar_logo_centrado()
         
         self.configurar_conexiones()
@@ -33,47 +31,34 @@ class LoginWindow(QtWidgets.QWidget):
             self.Error.hide()
 
     def configurar_logo_centrado(self):
-        """
-        1. Añade un espaciador arriba.
-        2. Añade el logo.
-        3. Añade un espaciador abajo.
-        Esto centra todo el contenido verticalmente.
-        """
         logo_path = os.path.join(current_dir, "assets", "logo.png")
         layout = self.layout()
         
         if not layout: return
-
-        # Solo aplicamos centrado vertical si el layout lo permite (ej. QVBoxLayout)
         es_vertical = isinstance(layout, QtWidgets.QVBoxLayout)
 
-        # 1. MUELLE SUPERIOR (Empuja todo hacia abajo)
+
         if es_vertical:
             layout.insertStretch(0, 1)
 
-        # 2. EL LOGO
         if os.path.exists(logo_path):
             self.lblLogo = QtWidgets.QLabel(self)
-            self.lblLogo.setAlignment(QtCore.Qt.AlignCenter) # Centrar horizontalmente
+            self.lblLogo.setAlignment(QtCore.Qt.AlignCenter) 
             
             pixmap = QtGui.QPixmap(logo_path)
             if not pixmap.isNull():
-                # Escalar si es muy grande (ej. 150px alto)
+
                 if pixmap.height() > 150:
                     pixmap = pixmap.scaledToHeight(150, QtCore.Qt.SmoothTransformation)
                 self.lblLogo.setPixmap(pixmap)
                 
-                # Insertar debajo del muelle superior (índice 1)
-                # Si no es vertical, lo pone al principio (índice 0)
+
                 idx = 1 if es_vertical else 0
                 layout.insertWidget(idx, self.lblLogo)
-                
-                # Espacio fijo entre logo y formulario
+
                 if es_vertical:
                     layout.insertSpacing(idx + 1, 30)
 
-        # 3. MUELLE INFERIOR (Empuja todo hacia arriba)
-        # Al tener muelle arriba y abajo con factor '1', se equilibra el espacio
         if es_vertical:
             layout.addStretch(1)
 

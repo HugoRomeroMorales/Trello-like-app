@@ -8,7 +8,6 @@ class ListasController:
         self.db = db_controller
 
     def crear_lista(self, name: str) -> Optional[TrelloLista]:
-        # Calcular posición: max pos + 1
         current_max_pos = max([l.posicion for l in self.tablero.lists], default=-1)
         new_list = self.db.crear_lista(self.tablero.id, name, current_max_pos + 1)
         if new_list:
@@ -105,7 +104,6 @@ class ListasController:
             exito = self.db.desasignar_usuario_tarjeta(card_id, user_id)
             
         if exito:
-            # Actualizar modelo local
             l = self._obtener_lista_por_id(list_id)
             if l:
                 c = next((x for x in l.cards if x.id == card_id), None)
@@ -115,15 +113,12 @@ class ListasController:
         return False
         
     def cargar_asignados_iniciales(self):
-        """Carga los usuarios asignados para todas las tarjetas."""
         if not self.tablero.lists:
             return
         for lista in self.tablero.lists:
             for card in lista.cards:
                 card.assignees = self.db.obtener_asignados_tarjeta(card.id)
 
-    # ===== MÉTODOS DE PAPELERA (Aquí estaba el lío) =====
-    # Nota: No reciben 'board_id' como argumento porque usan self.tablero.id
     
     def obtener_papelera(self) -> List[Tarjeta]:
         return self.db.obtener_papelera(self.tablero.id)

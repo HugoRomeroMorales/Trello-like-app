@@ -327,7 +327,7 @@ class PapeleraListasDialog(QtWidgets.QDialog):
 
     def cargar_datos(self):
         self.lista_papelera.clear()
-        # CORRECCIÓN AQUÍ: No pasamos argumentos, el controller ya sabe el tablero
+        # Este método sirve para obtener las listas eliminadas usando el controller que ya conoce el tablero actual
         self.items_data = self.controller.obtener_papelera_listas()
 
         if not self.items_data:
@@ -434,7 +434,7 @@ class PapeleraDialog(QtWidgets.QDialog):
 
     def cargar_datos(self):
         self.lista_papelera.clear()
-        # CORRECCIÓN AQUÍ: No pasamos argumentos, el controller ya sabe el tablero
+        # Este método sirve para obtener las tarjetas eliminadas usando el controller que ya tiene el contexto del tablero
         self.items_data = self.controller.obtener_papelera()
 
         if not self.items_data:
@@ -665,7 +665,7 @@ class MainWindow(QtWidgets.QWidget):
         else:
             self.setStyleSheet(current_style + font_style)
 
-        # --- RESPONSIVE TABS ---
+        # Usando el tamaño de fuente calculamos las dimensiones de las pestañas para hacerlas responsivas
         tab_h = max(28, int(size * 2.2))
         tab_w = max(70, int(size * 6))
 
@@ -1060,14 +1060,14 @@ class MainWindow(QtWidgets.QWidget):
     def abrir_papelera(self):
         if not hasattr(self, "listas_controller"):
             return
-        # CORRECCIÓN AQUÍ: No enviamos 'self.current_tablero.id'
+        # Este método sirve para abrir el diálogo de papelera de tarjetas usando el controlador de listas
         dialog = PapeleraDialog(self.listas_controller, self.current_tablero.id, self)
         dialog.exec_()
 
     def abrir_papelera_columnas(self):
         if not hasattr(self, "listas_controller"):
             return
-        # CORRECCIÓN AQUÍ: No enviamos 'self.current_tablero.id'
+        # Este método sirve para abrir el diálogo de papelera de columnas usando el controlador de listas
         dialog = PapeleraListasDialog(self.listas_controller, self.current_tablero.id, self)
         dialog.exec_()
 
